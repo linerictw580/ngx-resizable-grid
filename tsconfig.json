@@ -11,6 +11,10 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
+    "paths": {
+      // "ngx-resizable-grid": ["dist/ngx-resizable-grid"]  // 建置時需改回 dist
+      "ngx-resizable-grid": ["projects/ngx-resizable-grid/src/public-api.ts"] // 直接參考專案內的 library
+    },
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
