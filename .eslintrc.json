@@ -1,0 +1,55 @@
+{
+  "root": true,
+  // "ignorePatterns": [
+  //   "projects/**/*"
+  // ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "parserOptions": {
+        "project": [
+          "tsconfig.json"
+        ],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "eslint:recommended", // <-- 可以擺在第一位
+        "plugin:@angular-eslint/recommended",
+        "plugin:@typescript-eslint/recommended", // <-- 一定要放在 @angular-eslint 後面
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "prettier"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": [
+          "off"
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "style": "kebab-case"
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "prettier"
+      ],
+      "rules": {}
+    }
+  ]
+}
