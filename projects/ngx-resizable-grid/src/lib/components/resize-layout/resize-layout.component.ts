@@ -11,6 +11,22 @@ export class ResizeLayoutComponent implements OnInit {
   @Input() config!: IResizeLayoutConfig;
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
 
+  public get spacing() {
+    return this.config.spacing ?? '8px';
+  }
+
+  private get cssVars() {
+    return {
+      '--resize-spacing': this.spacing,
+    };
+  }
+
+  public get style() {
+    return {
+      ...this.cssVars,
+    };
+  }
+
   constructor() {}
 
   ngOnInit(): void {}

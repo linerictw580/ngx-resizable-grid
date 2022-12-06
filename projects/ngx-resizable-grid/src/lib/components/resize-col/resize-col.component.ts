@@ -17,13 +17,16 @@ import { IResizeColConfig, ResizeAxis, ResizeDir } from '../../models/resize.mod
 })
 export class ResizeColComponent implements OnInit, AfterViewInit {
   @HostBinding('style.flex-basis') flexBasis: any;
+  @HostBinding('style.border-right-width') borderRightWidth!: string;
   @HostBinding('class.resize-col') resizeCol = true;
   @HostBinding('class.resizable') resizable = true;
 
   @Input() col!: IResizeColConfig;
+  @Input() first!: boolean;
   @Input() last!: boolean;
   @Input() directions!: ResizeDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
+  @Input() spacing!: string;
 
   public get template() {
     return this.templates?.find((value) => value.key === this.col.key)?.templateRef;
@@ -45,6 +48,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.flexBasis = `${this.col.flex}%`;
+    this.borderRightWidth = this.last ? '0' : this.spacing;
   }
 
   ngAfterViewInit(): void {

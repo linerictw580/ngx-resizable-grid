@@ -1,9 +1,11 @@
-<div class="resize-container">
+<div class="resize-container" [style]="style">
   <resize-row
-    *ngFor="let row of config.rows; last as last"
+    *ngFor="let row of config.rows; first as first; last as last"
     [row]="row"
+    [first]="first"
     [last]="last"
     [directions]="['bottom']"
     [templates]="templates"
+    [spacing]="spacing"
   ></resize-row>
 </div>

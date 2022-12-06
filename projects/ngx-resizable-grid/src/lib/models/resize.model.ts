@@ -5,12 +5,12 @@ export type ResizeAxis = 'x' | 'y' | null;
 
 export interface IResizeLayoutConfig {
   rows: IResizeRowConfig[];
+  spacing?: string;
 }
 
 export interface IResizeRowConfig {
   flex: number;
-  cols?: IResizeColConfig[];
-  key?: string;
+  cols: IResizeColConfig[];
 }
 
 export interface IResizeColConfig {

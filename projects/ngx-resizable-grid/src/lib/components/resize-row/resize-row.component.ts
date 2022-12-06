@@ -17,17 +17,16 @@ import { IResizeRowConfig, ResizeAxis, ResizeDir } from '../../models/resize.mod
 })
 export class ResizeRowComponent implements OnInit, AfterViewInit {
   @HostBinding('style.flex-basis') flexBasis: any;
+  @HostBinding('style.border-top-width') borderTopWidth!: string;
   @HostBinding('class.resize-row') resizeRow = true;
   @HostBinding('class.resizable') resizable = true;
 
   @Input() row!: IResizeRowConfig;
+  @Input() first!: boolean;
   @Input() last!: boolean;
   @Input() directions!: ResizeDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
-
-  public get template() {
-    return this.templates?.find((value) => value.key === this.row.key)?.templateRef;
-  }
+  @Input() spacing!: string;
 
   private _resizeDir: ResizeDir = 'none';
   private _resizeAxis: ResizeAxis = null;
@@ -45,6 +44,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.flexBasis = `${this.row.flex}%`;
+    this.borderTopWidth = this.first ? this.spacing : '0';
   }
 
   ngAfterViewInit(): void {

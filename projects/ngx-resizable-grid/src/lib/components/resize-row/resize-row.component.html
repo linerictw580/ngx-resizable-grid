@@ -1,10 +1,11 @@
-<ng-container *ngIf="template" [ngTemplateOutlet]="template"></ng-container>
 <resize-col
-  *ngFor="let col of row.cols; last as last"
+  *ngFor="let col of row.cols; first as first; last as last"
   [col]="col"
+  [first]="first"
   [last]="last"
   [directions]="last ? ['none'] : ['right']"
   [templates]="templates"
+  [spacing]="spacing"
 ></resize-col>
 <div
   *ngFor="let dir of directions"
