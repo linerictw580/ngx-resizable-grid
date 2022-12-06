@@ -1,0 +1,9 @@
+<div class="resize-container">
+  <resize-row
+    *ngFor="let row of config.rows; last as last"
+    [row]="row"
+    [last]="last"
+    [directions]="['bottom']"
+    [templates]="templates"
+  ></resize-row>
+</div>

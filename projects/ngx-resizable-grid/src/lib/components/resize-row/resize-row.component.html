@@ -1,0 +1,18 @@
+<ng-container *ngIf="template" [ngTemplateOutlet]="template"></ng-container>
+<resize-col
+  *ngFor="let col of row.cols; last as last"
+  [col]="col"
+  [last]="last"
+  [directions]="last ? ['none'] : ['right']"
+  [templates]="templates"
+></resize-col>
+<div
+  *ngFor="let dir of directions"
+  [class]="'rg-' + dir"
+  resizeHandle
+  (dragStart)="onDragStart($event, dir)"
+  (dragMove)="onDragMove($event)"
+  (dragEnd)="onDragEnd($event)"
+>
+  <span></span>
+</div>

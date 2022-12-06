@@ -5,6 +5,33 @@
   "projects": {
     "ngx-resizable-grid": {
       "projectType": "library",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "skipTests": true
+        },
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:interceptor": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:resolver": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
+        }
+      },
       "root": "projects/ngx-resizable-grid",
       "sourceRoot": "projects/ngx-resizable-grid/src",
       "prefix": "lib",
@@ -81,6 +108,7 @@
               "projects/demo/src/assets"
             ],
             "styles": [
+              "./node_modules/normalize.css/normalize.css",
               "projects/demo/src/styles.scss"
             ],
             "scripts": []

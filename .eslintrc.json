@@ -38,6 +38,9 @@
             "type": "element",
             "style": "kebab-case"
           }
+        ],
+        "no-case-declarations": [
+          "off"
         ]
       }
     },

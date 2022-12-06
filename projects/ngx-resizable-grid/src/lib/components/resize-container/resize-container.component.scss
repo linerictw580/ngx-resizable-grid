@@ -1,0 +1,31 @@
+.resize-container {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+$spacing: 8px;
+
+:host ::ng-deep .resize-row {
+  position: relative;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-flow: row nowrap;
+  border: $spacing/2 solid #f0f0f0;
+
+  &.resizable {
+    flex: 0 0 100%;
+  }
+}
+:host ::ng-deep .resize-col {
+  position: relative;
+  box-sizing: border-box;
+  background: #fff;
+  border: $spacing/2 solid #f0f0f0;
+  flex: 1;
+  min-height: 60px;
+
+  &.resizable {
+    flex: 0 0 100%;
+  }
+}
