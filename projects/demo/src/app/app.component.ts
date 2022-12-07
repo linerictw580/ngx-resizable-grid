@@ -12,22 +12,29 @@ export class AppComponent {
   layoutTemplates!: QueryList<ResizeLayoutTemplateDirective>;
 
   resizeLayoutConfig: IResizeLayoutConfig = {
-    // spacing: '0.5rem',
+    // spacing: 16,
     rows: [
       {
         flex: 30,
         cols: [
           {
             key: 'block1',
-            flex: 40,
+            flex: 20,
+            minWidth: 150,
           },
           {
             key: 'block2',
-            flex: 40,
+            flex: 20,
           },
           {
             key: 'block3',
             flex: 20,
+            // minWidth: 200,
+          },
+          {
+            key: 'block4',
+            flex: 40,
+            // minWidth: 200,
           },
         ],
       },
@@ -35,7 +42,7 @@ export class AppComponent {
         flex: 30,
         cols: [
           {
-            key: 'block4',
+            key: 'block5',
             flex: 100,
           },
         ],

@@ -1,10 +1,5 @@
-$spacing: 8px;
-
 .resizable {
   position: relative;
-  &.no-transition {
-      transition: none !important;
-  }
 }
 .rg-none {
   display: none;
@@ -29,8 +24,9 @@ $spacing: 8px;
 .rg-right, .rg-left {
   span {
       border-width: 0 1px;
-      top: 50%; margin-top: -10px;
-      margin: -10px 0 0 $spacing/4;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       height: 20px;
       width: 4px;
   }
@@ -38,8 +34,9 @@ $spacing: 8px;
 .rg-top, .rg-bottom {
   span {
       border-width: 1px 0;
+      top: 50%;
       left: 50%;
-      margin: $spacing/4 0 0 -10px;
+      transform: translate(-50%, -50%);
       width: 20px;
       height: 4px;
   }
@@ -56,7 +53,7 @@ $spacing: 8px;
   height: 100%;
   right: 0;
   top: 0;
-  margin-right: -#{$spacing};
+  margin-right: calc(var(--resize-spacing) * -1);
 }
 .rg-bottom {
   cursor: row-resize;
@@ -70,5 +67,5 @@ $spacing: 8px;
   height: 100%;
   left: 0;
   top: 0;
-  margin-left: -#{$spacing};
+  margin-left: calc(var(--resize-spacing) * -1);
 }

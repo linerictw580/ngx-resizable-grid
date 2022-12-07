@@ -31,7 +31,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @Input() index!: number;
   @Input() directions!: ResizeYDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
-  @Input() spacing!: string;
+  @Input() spacing!: number;
 
   private _resizeYDir: ResizeYDir = 'none';
   private _resizeStartY!: number;
@@ -47,11 +47,22 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.flexBasis = `${this.row.flex}%`;
-    this.borderTopWidth = this.first ? this.spacing : '0';
+    this.borderTopWidth = this.first ? this.spacing + 'px' : '0';
   }
 
   ngAfterViewInit(): void {
     this._style = window.getComputedStyle(this._nativeElement);
+
+    // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
+    const columnSpacing = this.getColumnTotalWidth();
+    this.resizeCols.forEach((col) => {
+      const flexRate = col.col.flex * 0.01;
+      const colWidth = columnSpacing * flexRate;
+      if (colWidth < col.getMinWidth()) {
+        console.error('ResizableGrid Error: Column flex width smaller than min width.');
+      }
+      col.setResizeWidth(colWidth);
+    });
   }
 
   onDragStart(e: any, dir: ResizeYDir) {
@@ -74,8 +85,11 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   onDragEnd(e: any) {}
 
-  getWidth() {
-    return parseFloat(this._style.getPropertyValue('width'));
+  /**取得扣掉 gap 之後剩餘的 row 寬度 */
+  getColumnTotalWidth() {
+    const rowWidth = parseFloat(this._style.getPropertyValue('width'));
+    const totalGapWidth = (this.resizeCols.length - 1) * this.spacing;
+    return rowWidth - totalGapWidth;
   }
 
   getHeight() {
@@ -103,5 +117,29 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     nextCol?.setResizeWidth(nextCol.getWidth());
     nextCol?.setFlexGrow(0);
     nextCol?.setFlexShrink(0);
+  }
+
+  onColResize(e: ColResizeEvent) {
+    const { index, last, newWidth } = e;
+    if (last) {
+      return;
+    }
+
+    const rowWidth = this.getColumnTotalWidth();
+    const currCol = this.resizeCols.get(index);
+    const nextCol = this.resizeCols.get(index + 1);
+    const otherCols = this.resizeCols.filter((item, i) => i !== index && i !== index + 1);
+
+    const nextColMinWidth = nextCol?.getMinWidth() ?? 0;
+    const otherColsTotalWidth = otherCols.reduce((acc, col) => {
+      return acc + col.getWidth();
+    }, 0);
+
+    const allowMaxWidth = rowWidth - (nextColMinWidth + otherColsTotalWidth);
+    if (newWidth > allowMaxWidth) {
+      currCol?.setResizeWidth(allowMaxWidth);
+    } else {
+      currCol?.setResizeWidth(newWidth);
+    }
   }
 }

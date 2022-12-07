@@ -2,7 +2,7 @@ $spacing: 8px;
 
 :host {
   position: relative;
-  box-sizing: border-box;
+  box-sizing: content-box;
   flex: 1;
   display: flex;
   flex-flow: row nowrap;

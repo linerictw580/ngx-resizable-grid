@@ -22,6 +22,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @HostBinding('style.flex-grow') flexGrow: any;
   @HostBinding('style.flex-shrink') flexShrink: any;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
+  @HostBinding('style.min-width') minWidth!: string;
   @HostBinding('class.resize-col') resizeCol = true;
   @HostBinding('class.resizable') resizable = true;
 
@@ -31,7 +32,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @Input() index!: number;
   @Input() directions!: ResizeXDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
-  @Input() spacing!: string;
+  @Input() spacing!: number;
 
   @Output() colResizeStart = new EventEmitter<ColResizeEvent>();
   @Output() colResize = new EventEmitter<ColResizeEvent>();
@@ -57,7 +58,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.flexBasis = `${this.col.flex}%`;
     this.flexGrow = 0;
     this.flexShrink = 0;
-    this.borderRightWidth = this.last ? '0' : this.spacing;
+    this.borderRightWidth = this.last ? '0' : this.spacing + 'px';
+    this.minWidth = (this.col.minWidth ?? 0) + 'px';
   }
 
   ngAfterViewInit(): void {
@@ -74,7 +76,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.colResizeStart.emit({
       index: this.index,
       last: this.last,
-      width: this.getWidth(),
+      newWidth: this.getWidth(),
     });
   }
 
@@ -84,12 +86,11 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     const operand = this._resizeXDir === 'right' ? 1 : -1;
 
     const newWidth = this._width - offset * operand;
-    this.flexBasis = newWidth + 'px';
 
     this.colResize.emit({
       index: this.index,
       last: this.last,
-      width: this.getWidth(),
+      newWidth,
     });
   }
 
@@ -97,12 +98,16 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.colResizeEnd.emit({
       index: this.index,
       last: this.last,
-      width: this.getWidth(),
+      newWidth: this.getWidth(),
     });
   }
 
   getWidth() {
     return parseFloat(this._style.getPropertyValue('width'));
+  }
+
+  getMinWidth() {
+    return parseFloat(this._style.getPropertyValue('min-width'));
   }
 
   /**

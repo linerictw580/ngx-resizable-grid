@@ -12,12 +12,12 @@ export class ResizeLayoutComponent {
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
 
   public get spacing() {
-    return this.config.spacing ?? '8px';
+    return this.config.spacing ?? 8;
   }
 
   private get cssVars() {
     return {
-      '--resize-spacing': this.spacing,
+      '--resize-spacing': this.spacing + 'px',
     };
   }
 

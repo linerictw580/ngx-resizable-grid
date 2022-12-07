@@ -2,10 +2,10 @@ $spacing: 8px;
 
 :host {
   position: relative;
-  box-sizing: border-box;
+  box-sizing: content-box;
   flex: 1;
   background: white;
-  min-width: 100px;
+  // min-width: 100px;
   min-height: 60px;
 
   border-style: solid;

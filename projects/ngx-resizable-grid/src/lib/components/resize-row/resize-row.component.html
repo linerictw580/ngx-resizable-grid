@@ -9,6 +9,7 @@
   [spacing]="spacing"
   (colResizeStart)="onColResizeStart($event)"
   (colResizeEnd)="onColResizeEnd($event)"
+  (colResize)="onColResize($event)"
 ></resize-col>
 <div
   *ngFor="let dir of directions"
