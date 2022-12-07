@@ -1,21 +1,4 @@
 <h1>Ngx Resizable Grid Demo</h1>
-<resize-container>
-  <resize-unit type="row" [flex]="30" [directions]="['bottom']">
-    <resize-unit type="col" [flex]="40" [directions]="['right']">
-      <div class="block"></div>
-    </resize-unit>
-    <resize-unit type="col" [flex]="40" [directions]="['right']">
-      <div class="block"></div>
-    </resize-unit>
-    <resize-unit type="col" [flex]="20" [directions]="['none']">
-      <div class="block"></div>
-    </resize-unit>
-  </resize-unit>
-  <resize-unit type="row" [flex]="30" [directions]="['bottom']">
-    <div class="block"></div>
-  </resize-unit>
-</resize-container>
-
 <h2>Resize Layout</h2>
 
 <resize-layout [config]="resizeLayoutConfig" [templates]="layoutTemplates"></resize-layout>

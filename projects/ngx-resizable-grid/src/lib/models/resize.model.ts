@@ -1,7 +1,5 @@
-export type ResizeDir = 'top' | 'bottom' | 'left' | 'right' | 'none';
 export type ResizeXDir = 'left' | 'right' | 'none';
 export type ResizeYDir = 'top' | 'bottom' | 'none';
-export type ResizeAxis = 'x' | 'y' | null;
 
 export interface IResizeLayoutConfig {
   rows: IResizeRowConfig[];
