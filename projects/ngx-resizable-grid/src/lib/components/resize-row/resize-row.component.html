@@ -1,11 +1,14 @@
 <resize-col
-  *ngFor="let col of row.cols; first as first; last as last"
+  *ngFor="let col of row.cols; first as first; last as last; index as index"
   [col]="col"
   [first]="first"
   [last]="last"
+  [index]="index"
   [directions]="last ? ['none'] : ['right']"
   [templates]="templates"
   [spacing]="spacing"
+  (colResizeStart)="onColResizeStart($event)"
+  (colResizeEnd)="onColResizeEnd($event)"
 ></resize-col>
 <div
   *ngFor="let dir of directions"

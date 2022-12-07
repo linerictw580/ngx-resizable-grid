@@ -1,9 +1,10 @@
 <ng-container *ngIf="template" [ngTemplateOutlet]="template"></ng-container>
 <resize-row
-  *ngFor="let row of col.rows; first as first; last as last"
+  *ngFor="let row of col.rows; first as first; last as last; index as index"
   [row]="row"
   [first]="first"
   [last]="last"
+  [index]="index"
   [directions]="['bottom']"
   [templates]="templates"
   [spacing]="spacing"

@@ -6,9 +6,11 @@ import {
   Input,
   OnInit,
   QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
-import { IResizeRowConfig, ResizeAxis, ResizeDir } from '../../models/resize.model';
+import { ColResizeEvent, IResizeRowConfig, ResizeYDir } from '../../models/resize.model';
+import { ResizeColComponent } from '../resize-col/resize-col.component';
 
 @Component({
   selector: 'resize-row',
@@ -16,6 +18,8 @@ import { IResizeRowConfig, ResizeAxis, ResizeDir } from '../../models/resize.mod
   styleUrls: ['./resize-row.component.scss'],
 })
 export class ResizeRowComponent implements OnInit, AfterViewInit {
+  @ViewChildren(ResizeColComponent) resizeCols!: QueryList<ResizeColComponent>;
+
   @HostBinding('style.flex-basis') flexBasis: any;
   @HostBinding('style.border-top-width') borderTopWidth!: string;
   @HostBinding('class.resize-row') resizeRow = true;
@@ -24,18 +28,17 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @Input() row!: IResizeRowConfig;
   @Input() first!: boolean;
   @Input() last!: boolean;
-  @Input() directions!: ResizeDir[];
+  @Input() index!: number;
+  @Input() directions!: ResizeYDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
   @Input() spacing!: string;
 
-  private _resizeDir: ResizeDir = 'none';
-  private _resizeAxis: ResizeAxis = null;
-  private _resizeStart!: number;
+  private _resizeYDir: ResizeYDir = 'none';
+  private _resizeStartY!: number;
   private _nativeElement!: HTMLElement;
 
   private _style!: CSSStyleDeclaration;
 
-  private _width!: number;
   private _height!: number;
 
   constructor(private _elem: ElementRef) {
@@ -51,50 +54,54 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this._style = window.getComputedStyle(this._nativeElement);
   }
 
-  getResizeAxis(dir: ResizeDir): ResizeAxis {
-    if (dir === 'none') {
-      return null;
-    }
-    return dir === 'left' || dir === 'right' ? 'x' : 'y';
-  }
-
-  onDragStart(e: any, dir: ResizeDir) {
+  onDragStart(e: any, dir: ResizeYDir) {
     const mouseEvent = e.nativeEvent as MouseEvent;
 
-    this._resizeDir = dir;
-    this._resizeAxis = this.getResizeAxis(dir);
-    this._resizeStart = this._resizeAxis === 'x' ? mouseEvent.clientX : mouseEvent.clientY;
+    this._resizeYDir = dir;
+    this._resizeStartY = mouseEvent.clientY;
 
-    this._width = parseInt(this._style.getPropertyValue('width'));
-    this._height = parseInt(this._style.getPropertyValue('height'));
-
-    console.log('onDragStart');
+    this._height = this.getHeight();
   }
 
   onDragMove(e: any) {
     const mouseEvent = e.nativeEvent as MouseEvent;
-    const offset =
-      this._resizeStart - (this._resizeAxis === 'x' ? mouseEvent.clientX : mouseEvent.clientY);
+    const offset = this._resizeStartY - mouseEvent.clientY;
+    const operand = this._resizeYDir === 'bottom' ? 1 : -1;
 
-    const operand = this._resizeDir === 'bottom' || this._resizeDir === 'right' ? 1 : -1;
-    switch (this._resizeDir) {
-      case 'top':
-      case 'bottom':
-        const height = this._height - offset * operand + 'px';
-        this.flexBasis = height;
-        break;
-
-      case 'left':
-      case 'right':
-        const width = this._width - offset * operand + 'px';
-        this.flexBasis = width;
-        break;
-    }
-
-    console.log('onDragMove');
+    const newHeight = this._height - offset * operand;
+    this.flexBasis = newHeight + 'px';
   }
 
-  onDragEnd(e: any) {
-    console.log('onDragEnd');
+  onDragEnd(e: any) {}
+
+  getWidth() {
+    return parseFloat(this._style.getPropertyValue('width'));
+  }
+
+  getHeight() {
+    return parseFloat(this._style.getPropertyValue('height'));
+  }
+
+  onColResizeStart(e: ColResizeEvent) {
+    const { index, last } = e;
+    if (last) {
+      return;
+    }
+
+    const nextCol = this.resizeCols.get(index + 1);
+    nextCol?.setFlexGrow(1);
+    nextCol?.setFlexShrink(1);
+  }
+
+  onColResizeEnd(e: ColResizeEvent) {
+    const { index, last } = e;
+    if (last) {
+      return;
+    }
+
+    const nextCol = this.resizeCols.get(index + 1);
+    nextCol?.setResizeWidth(nextCol.getWidth());
+    nextCol?.setFlexGrow(0);
+    nextCol?.setFlexShrink(0);
   }
 }
