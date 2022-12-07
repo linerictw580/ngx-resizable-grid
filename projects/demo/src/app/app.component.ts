@@ -15,7 +15,6 @@ export class AppComponent {
     // spacing: 16,
     rows: [
       {
-        flex: 30,
         cols: [
           {
             key: 'block1',
@@ -39,7 +38,8 @@ export class AppComponent {
         ],
       },
       {
-        flex: 30,
+        height: 200,
+        minHeight: 60,
         cols: [
           {
             key: 'block5',

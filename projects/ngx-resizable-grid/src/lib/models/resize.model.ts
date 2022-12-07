@@ -8,11 +8,13 @@ export interface IResizeLayoutConfig {
 }
 
 export interface IResizeRowConfig {
-  flex: number;
   cols: IResizeColConfig[];
+  height?: number;
+  minHeight?: number;
 }
 
 export interface IResizeColConfig {
+  /**the percentage of width allocated to this column */
   flex: number;
   rows?: IResizeRowConfig[];
   key?: string;

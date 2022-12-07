@@ -46,7 +46,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.flexBasis = `${this.row.flex}%`;
+    this.flexBasis = (this.row.height ?? 120) + 'px';
     this.borderTopWidth = this.first ? this.spacing + 'px' : '0';
   }
 
@@ -80,7 +80,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     const operand = this._resizeYDir === 'bottom' ? 1 : -1;
 
     const newHeight = this._height - offset * operand;
-    this.flexBasis = newHeight + 'px';
+    this.flexBasis = Math.max(newHeight, this.row.minHeight ?? 0) + 'px';
   }
 
   onDragEnd(e: any) {}
