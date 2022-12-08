@@ -40,7 +40,7 @@ export class AppComponent {
         ],
       },
       {
-        height: 200,
+        height: 120,
         minHeight: 60,
         cols: [
           {
@@ -51,6 +51,7 @@ export class AppComponent {
             flex: 50,
             rows: [
               {
+                flex: 30,
                 cols: [
                   {
                     key: 'block6',
@@ -59,6 +60,7 @@ export class AppComponent {
                 ],
               },
               {
+                flex: 30,
                 cols: [
                   {
                     key: 'block7',
@@ -67,11 +69,13 @@ export class AppComponent {
                 ],
               },
               {
+                flex: 40,
                 cols: [
                   {
                     flex: 100,
                     rows: [
                       {
+                        flex: 100,
                         cols: [
                           {
                             key: 'block8',

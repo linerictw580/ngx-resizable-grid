@@ -2,14 +2,21 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   HostBinding,
   Input,
   OnInit,
+  Output,
   QueryList,
   ViewChildren,
 } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
-import { ColResizeEvent, IResizeRowConfig, ResizeYDir } from '../../models/resize.model';
+import {
+  ColResizeEvent,
+  IResizeRowConfig,
+  ResizeYDir,
+  RowResizeEvent,
+} from '../../models/resize.model';
 import { ResizeColComponent } from '../resize-col/resize-col.component';
 
 @Component({
@@ -21,6 +28,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @ViewChildren(ResizeColComponent) resizeCols!: QueryList<ResizeColComponent>;
 
   @HostBinding('style.flex-basis') flexBasis: any;
+  @HostBinding('style.flex-grow') flexGrow: any;
+  @HostBinding('style.flex-shrink') flexShrink: any;
   @HostBinding('style.border-top-width') borderTopWidth!: string;
   @HostBinding('style.border-left-width') borderLeftWidth!: string;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
@@ -38,6 +47,10 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   /**represents the index of layer this row is currently on (root layer is `1`) */
   @Input() layer!: number;
 
+  @Output() rowResizeStart = new EventEmitter<RowResizeEvent>();
+  @Output() rowResize = new EventEmitter<RowResizeEvent>();
+  @Output() rowResizeEnd = new EventEmitter<RowResizeEvent>();
+
   private _resizeYDir: ResizeYDir = 'none';
   private _resizeStartY!: number;
   private _nativeElement!: HTMLElement;
@@ -45,18 +58,44 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   private _style!: CSSStyleDeclaration;
 
   private _height!: number;
+  private _flex!: number;
+  /**the current height percentage of this row (updates after every resize) */
+  get flex() {
+    return this._flex;
+  }
 
   constructor(private _elem: ElementRef) {
     this._nativeElement = this._elem.nativeElement;
   }
 
   ngOnInit(): void {
-    this.flexBasis = (this.row.height ?? 120) + 'px';
     this.borderTopWidth = this.first && this.layer === 1 ? this.spacing + 'px' : '0';
     this.borderLeftWidth = this.layer === 1 ? this.spacing + 'px' : '0';
     this.borderRightWidth = this.layer === 1 ? this.spacing + 'px' : '0';
     this.borderBottomWidth =
       this.layer === 1 || (this.layer !== 1 && !this.last) ? this.spacing + 'px' : '0';
+
+    this._initFlexParams();
+  }
+
+  private _initFlexParams() {
+    // start using flex instead of height to calculate row height while layer index is greater than 1
+    if (this.layer > 1) {
+      if (!this.row.flex) {
+        console.error('ResizableGrid Error: `flex` must be set with rows in layer 2 or higher.');
+      }
+      if (this.row.height) {
+        console.error(
+          'ResizableGrid Error: use `flex` instead of `height` with rows in layer 2 or higher.'
+        );
+      }
+      this.flexBasis = `${this.row.flex}%`;
+      this._flex = this.row.flex ?? 0;
+    } else {
+      this.flexBasis = (this.row.height ?? 120) + 'px';
+    }
+    this.flexGrow = 0;
+    this.flexShrink = 0;
   }
 
   ngAfterViewInit(): void {
@@ -72,6 +111,11 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this._resizeStartY = mouseEvent.clientY;
 
     this._height = this.getHeight();
+    this.rowResizeStart.emit({
+      index: this.index,
+      last: this.last,
+      newHeight: this.getHeight(),
+    });
   }
 
   onDragMove(e: any) {
@@ -80,20 +124,35 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     const operand = this._resizeYDir === 'bottom' ? 1 : -1;
 
     const newHeight = this._height - offset * operand;
-    this.flexBasis = Math.max(newHeight, this.row.minHeight ?? 0) + 'px';
+
+    this.rowResize.emit({
+      index: this.index,
+      last: this.last,
+      newHeight,
+    });
   }
 
-  onDragEnd(e: any) {}
+  onDragEnd(e: any) {
+    this.rowResizeEnd.emit({
+      index: this.index,
+      last: this.last,
+      newHeight: this.getHeight(),
+    });
+  }
 
   /**取得扣掉 gap 之後剩餘的 row 寬度 */
-  getColumnTotalWidth() {
+  getRowAvailableWidth() {
     const rowWidth = parseFloat(this._style.getPropertyValue('width'));
-    const totalGapWidth = (this.resizeCols.length - 1) * this.spacing;
+    const totalGapWidth = Math.max(this.resizeCols.length - 1, 0) * this.spacing;
     return rowWidth - totalGapWidth;
   }
 
   getHeight() {
     return parseFloat(this._style.getPropertyValue('height'));
+  }
+
+  getMinHeight() {
+    return this.row.minHeight ?? 0;
   }
 
   onColResizeStart(e: ColResizeEvent) {
@@ -114,7 +173,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     }
 
     const nextCol = this.resizeCols.get(index + 1);
-    nextCol?.setResizeWidth(nextCol.getWidth(), this.getColumnTotalWidth());
+    nextCol?.setResizeWidth(nextCol.getWidth(), this.getRowAvailableWidth());
     nextCol?.setFlexGrow(0);
     nextCol?.setFlexShrink(0);
   }
@@ -125,7 +184,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const rowWidth = this.getColumnTotalWidth();
+    const rowWidth = this.getRowAvailableWidth();
     const currCol = this.resizeCols.get(index);
     const nextCol = this.resizeCols.get(index + 1);
     const otherCols = this.resizeCols.filter((item, i) => i !== index && i !== index + 1);
@@ -144,16 +203,41 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     }
   }
 
+  /**
+   *
+   * @param height
+   * @param totalRowHeight used to calculate the height percentage of this row (only rows from layer index greater than `1` requires this)
+   */
+  setResizeHeight(height: number, totalRowHeight?: number) {
+    if (this.layer > 1) {
+      this.flexBasis = height + 'px';
+      this._flex = (height / (totalRowHeight ?? height)) * 100;
+      console.log(`layer${this.layer}`, this.flexBasis);
+    } else {
+      // this.flexBasis = Math.max(height, this.getMinHeight()) + 'px';
+      this.flexBasis = height + 'px';
+    }
+    console.log('setResizeHeight', height);
+  }
+
+  setFlexGrow(value: any) {
+    this.flexGrow = value;
+  }
+
+  setFlexShrink(value: any) {
+    this.flexShrink = value;
+  }
+
   calcColsWidth() {
     // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
-    const columnSpacing = this.getColumnTotalWidth();
+    const availableWidth = this.getRowAvailableWidth();
     this.resizeCols.forEach((col) => {
       const flexRate = col.flex * 0.01;
-      const colWidth = columnSpacing * flexRate;
+      const colWidth = availableWidth * flexRate;
       if (colWidth < col.getMinWidth()) {
         console.error('ResizableGrid Error: Column flex width smaller than min width.');
       }
-      col.setResizeWidth(colWidth, columnSpacing);
+      col.setResizeWidth(colWidth, availableWidth);
     });
   }
 }

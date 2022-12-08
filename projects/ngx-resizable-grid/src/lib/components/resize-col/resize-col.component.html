@@ -11,6 +11,9 @@
   [layer]="layer + 1"
   resizeObserver
   (elementResize)="onContainerResize(index)"
+  (rowResizeStart)="onRowResizeStart($event)"
+  (rowResizeEnd)="onRowResizeEnd($event)"
+  (rowResize)="onRowResize($event)"
 ></resize-row>
 <div
   *ngFor="let dir of directions"

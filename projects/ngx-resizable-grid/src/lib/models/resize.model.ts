@@ -9,6 +9,8 @@ export interface IResizeLayoutConfig {
 
 export interface IResizeRowConfig {
   cols: IResizeColConfig[];
+  /**the percentage of height allocated to this row (only takes affect start from layer `2`) */
+  flex?: number;
   height?: number;
   minHeight?: number;
 }
@@ -20,6 +22,12 @@ export interface IResizeColConfig {
   key?: string;
   /**the minimum width allowed this column to be resized to in pixels */
   minWidth?: number;
+}
+
+export class RowResizeEvent {
+  index!: number;
+  last!: boolean;
+  newHeight!: number;
 }
 
 export class ColResizeEvent {

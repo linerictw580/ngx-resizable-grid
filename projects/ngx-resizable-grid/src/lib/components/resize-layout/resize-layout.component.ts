@@ -1,6 +1,6 @@
 import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
-import { IResizeLayoutConfig } from '../../models/resize.model';
+import { IResizeLayoutConfig, RowResizeEvent } from '../../models/resize.model';
 import { ResizeRowComponent } from '../resize-row/resize-row.component';
 
 @Component({
@@ -28,6 +28,21 @@ export class ResizeLayoutComponent {
     return {
       ...this.cssVars,
     };
+  }
+
+  onRowResizeStart(e: RowResizeEvent) {
+    const { index, last } = e;
+  }
+
+  onRowResizeEnd(e: RowResizeEvent) {
+    const { index, last } = e;
+  }
+
+  onRowResize(e: RowResizeEvent) {
+    const { index, last, newHeight } = e;
+
+    const currRow = this.resizeRows.get(index);
+    currRow?.setResizeHeight(newHeight);
   }
 
   onContainerResize(index: number) {
