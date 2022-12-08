@@ -5,6 +5,7 @@ import { ResizeLayoutComponent } from './components/resize-layout/resize-layout.
 import { ResizeLayoutTemplateDirective } from './directives/resize-layout-template.directive';
 import { ResizeRowComponent } from './components/resize-row/resize-row.component';
 import { ResizeColComponent } from './components/resize-col/resize-col.component';
+import { ResizeObserverDirective } from './directives/resize-observer.directive';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { ResizeColComponent } from './components/resize-col/resize-col.component
     ResizeLayoutTemplateDirective,
     ResizeRowComponent,
     ResizeColComponent,
+    ResizeObserverDirective,
   ],
   imports: [CommonModule],
   exports: [ResizeLayoutComponent, ResizeLayoutTemplateDirective],

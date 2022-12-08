@@ -1,3 +1,22 @@
+.main {
+  display: flex;
+
+  .side-nav {
+    width: 10%;
+    height: 500px;
+    background: lightgray;
+    transition: 0.5s;
+
+    &.open {
+      width: 20%;
+    }
+  }
+  .page {
+    flex: 1;
+    border: 1px solid black;
+  }
+}
+
 .block {
   background: pink;
   // width: 150px;

@@ -11,6 +11,8 @@ export class AppComponent {
   @ViewChildren(ResizeLayoutTemplateDirective)
   layoutTemplates!: QueryList<ResizeLayoutTemplateDirective>;
 
+  sidenavOpen = false;
+
   resizeLayoutConfig: IResizeLayoutConfig = {
     // spacing: 16,
     rows: [
@@ -19,7 +21,7 @@ export class AppComponent {
           {
             key: 'block1',
             flex: 20,
-            minWidth: 150,
+            minWidth: 40,
           },
           {
             key: 'block2',
@@ -49,4 +51,8 @@ export class AppComponent {
       },
     ],
   };
+
+  onToggleSidenav(): void {
+    this.sidenavOpen = !this.sidenavOpen;
+  }
 }

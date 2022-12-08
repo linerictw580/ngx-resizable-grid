@@ -53,16 +53,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this._style = window.getComputedStyle(this._nativeElement);
 
-    // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
-    const columnSpacing = this.getColumnTotalWidth();
-    this.resizeCols.forEach((col) => {
-      const flexRate = col.col.flex * 0.01;
-      const colWidth = columnSpacing * flexRate;
-      if (colWidth < col.getMinWidth()) {
-        console.error('ResizableGrid Error: Column flex width smaller than min width.');
-      }
-      col.setResizeWidth(colWidth);
-    });
+    this.calcColsWidth();
   }
 
   onDragStart(e: any, dir: ResizeYDir) {
@@ -141,5 +132,18 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     } else {
       currCol?.setResizeWidth(newWidth);
     }
+  }
+
+  calcColsWidth() {
+    // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
+    const columnSpacing = this.getColumnTotalWidth();
+    this.resizeCols.forEach((col) => {
+      const flexRate = col.col.flex * 0.01;
+      const colWidth = columnSpacing * flexRate;
+      if (colWidth < col.getMinWidth()) {
+        console.error('ResizableGrid Error: Column flex width smaller than min width.');
+      }
+      col.setResizeWidth(colWidth);
+    });
   }
 }

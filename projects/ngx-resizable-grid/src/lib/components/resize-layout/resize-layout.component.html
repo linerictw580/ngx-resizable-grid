@@ -8,5 +8,7 @@
     [directions]="['bottom']"
     [templates]="templates"
     [spacing]="spacing"
+    resizeObserver
+    (elementResize)="onContainerResize(index)"
   ></resize-row>
 </div>

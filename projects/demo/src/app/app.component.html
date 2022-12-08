@@ -1,7 +1,13 @@
 <h1>Ngx Resizable Grid Demo</h1>
 <h2>Resize Layout</h2>
 
-<resize-layout [config]="resizeLayoutConfig" [templates]="layoutTemplates"></resize-layout>
+<button (click)="onToggleSidenav()">Toggle Sidenav</button>
+<div class="main">
+  <div class="side-nav" [class.open]="sidenavOpen"></div>
+  <div class="page">
+    <resize-layout [config]="resizeLayoutConfig" [templates]="layoutTemplates"></resize-layout>
+  </div>
+</div>
 
 <ng-template resizeLayoutTemplate key="block1">
   <div class="block" style="background: palevioletred"></div>
@@ -24,4 +30,4 @@
 </ng-template>
 
 <h2>Other Content</h2>
-<div class="block"></div>
+<div style="width: 100%; height: 400px"></div>

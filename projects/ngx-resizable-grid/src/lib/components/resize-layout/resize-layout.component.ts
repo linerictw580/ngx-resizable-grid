@@ -1,6 +1,7 @@
-import { Component, Input, QueryList } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
 import { IResizeLayoutConfig } from '../../models/resize.model';
+import { ResizeRowComponent } from '../resize-row/resize-row.component';
 
 @Component({
   selector: 'resize-layout',
@@ -8,6 +9,8 @@ import { IResizeLayoutConfig } from '../../models/resize.model';
   styleUrls: ['./resize-layout.component.scss'],
 })
 export class ResizeLayoutComponent {
+  @ViewChildren(ResizeRowComponent) resizeRows!: QueryList<ResizeRowComponent>;
+
   @Input() config!: IResizeLayoutConfig;
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
 
@@ -25,5 +28,9 @@ export class ResizeLayoutComponent {
     return {
       ...this.cssVars,
     };
+  }
+
+  onContainerResize(index: number) {
+    this.resizeRows.get(index)?.calcColsWidth();
   }
 }

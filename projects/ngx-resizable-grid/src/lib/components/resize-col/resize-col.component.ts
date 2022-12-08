@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -8,6 +9,7 @@ import {
   OnInit,
   Output,
   QueryList,
+  SkipSelf,
 } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
 import { ColResizeEvent, IResizeColConfig, ResizeXDir } from '../../models/resize.model';
@@ -50,7 +52,11 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   private _width!: number;
 
-  constructor(private _elem: ElementRef) {
+  constructor(
+    private _elem: ElementRef,
+    // Skip the current's component changed detector and give access to the first ancestor (in this case the host component)
+    @SkipSelf() private _cdr: ChangeDetectorRef
+  ) {
     this._nativeElement = this._elem.nativeElement;
   }
 
@@ -116,6 +122,11 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
    */
   setResizeWidth(width: number) {
     this.flexBasis = width + 'px';
+
+    // @HostBinding() not updating view bindings (flexBasis) while resize-container resizes and recalculates every resize-column's width
+    // According to https://github.com/angular/angular/issues/22560 host bindings are part of parent's view
+    // so we will have to call detectChanges from ChangeDetectorRef while using @SkipSelf decorator
+    this._cdr.detectChanges();
   }
 
   setFlexGrow(value: any) {
