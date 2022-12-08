@@ -22,6 +22,9 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   @HostBinding('style.flex-basis') flexBasis: any;
   @HostBinding('style.border-top-width') borderTopWidth!: string;
+  @HostBinding('style.border-left-width') borderLeftWidth!: string;
+  @HostBinding('style.border-right-width') borderRightWidth!: string;
+  @HostBinding('style.border-bottom-width') borderBottomWidth!: string;
   @HostBinding('class.resize-row') resizeRow = true;
   @HostBinding('class.resizable') resizable = true;
 
@@ -32,6 +35,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @Input() directions!: ResizeYDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
   @Input() spacing!: number;
+  /**represents the index of layer this row is currently on (root layer is `1`) */
+  @Input() layer!: number;
 
   private _resizeYDir: ResizeYDir = 'none';
   private _resizeStartY!: number;
@@ -47,7 +52,11 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.flexBasis = (this.row.height ?? 120) + 'px';
-    this.borderTopWidth = this.first ? this.spacing + 'px' : '0';
+    this.borderTopWidth = this.first && this.layer === 1 ? this.spacing + 'px' : '0';
+    this.borderLeftWidth = this.layer === 1 ? this.spacing + 'px' : '0';
+    this.borderRightWidth = this.layer === 1 ? this.spacing + 'px' : '0';
+    this.borderBottomWidth =
+      this.layer === 1 || (this.layer !== 1 && !this.last) ? this.spacing + 'px' : '0';
   }
 
   ngAfterViewInit(): void {

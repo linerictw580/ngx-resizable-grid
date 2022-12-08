@@ -1,6 +1,11 @@
 $spacing: 8px;
 
 :host {
+  // if a resize-col contains resize-rows
+  // it can be also considered as a resize-container
+  display: flex;
+  flex-flow: column nowrap;
+
   position: relative;
   box-sizing: content-box;
   flex: 1;

@@ -5,9 +5,12 @@
   [first]="first"
   [last]="last"
   [index]="index"
-  [directions]="['bottom']"
+  [directions]="last ? ['none'] : ['bottom']"
   [templates]="templates"
   [spacing]="spacing"
+  [layer]="layer + 1"
+  resizeObserver
+  (elementResize)="onContainerResize(index)"
 ></resize-row>
 <div
   *ngFor="let dir of directions"

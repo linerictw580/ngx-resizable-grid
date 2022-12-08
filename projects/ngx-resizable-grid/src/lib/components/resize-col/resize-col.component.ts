@@ -10,9 +10,11 @@ import {
   Output,
   QueryList,
   SkipSelf,
+  ViewChildren,
 } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
 import { ColResizeEvent, IResizeColConfig, ResizeXDir } from '../../models/resize.model';
+import { ResizeRowComponent } from '../resize-row/resize-row.component';
 
 @Component({
   selector: 'resize-col',
@@ -20,6 +22,8 @@ import { ColResizeEvent, IResizeColConfig, ResizeXDir } from '../../models/resiz
   styleUrls: ['./resize-col.component.scss'],
 })
 export class ResizeColComponent implements OnInit, AfterViewInit {
+  @ViewChildren(ResizeRowComponent) resizeRows!: QueryList<ResizeRowComponent>;
+
   @HostBinding('style.flex-basis') flexBasis: any;
   @HostBinding('style.flex-grow') flexGrow: any;
   @HostBinding('style.flex-shrink') flexShrink: any;
@@ -35,6 +39,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @Input() directions!: ResizeXDir[];
   @Input() templates!: QueryList<ResizeLayoutTemplateDirective>;
   @Input() spacing!: number;
+  /**represents the index of layer this column is currently on (root layer is `1`) */
+  @Input() layer!: number;
 
   @Output() colResizeStart = new EventEmitter<ColResizeEvent>();
   @Output() colResize = new EventEmitter<ColResizeEvent>();
@@ -146,5 +152,9 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   setFlexShrink(value: any) {
     this.flexShrink = value;
+  }
+
+  onContainerResize(index: number) {
+    this.resizeRows.get(index)?.calcColsWidth();
   }
 }
