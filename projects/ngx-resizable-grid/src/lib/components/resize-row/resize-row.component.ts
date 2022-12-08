@@ -105,7 +105,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     }
 
     const nextCol = this.resizeCols.get(index + 1);
-    nextCol?.setResizeWidth(nextCol.getWidth());
+    nextCol?.setResizeWidth(nextCol.getWidth(), this.getColumnTotalWidth());
     nextCol?.setFlexGrow(0);
     nextCol?.setFlexShrink(0);
   }
@@ -127,10 +127,11 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     }, 0);
 
     const allowMaxWidth = rowWidth - (nextColMinWidth + otherColsTotalWidth);
+    // stops column from expanding and pushing other columns out of the row's bounds
     if (newWidth > allowMaxWidth) {
-      currCol?.setResizeWidth(allowMaxWidth);
+      currCol?.setResizeWidth(allowMaxWidth, rowWidth);
     } else {
-      currCol?.setResizeWidth(newWidth);
+      currCol?.setResizeWidth(newWidth, rowWidth);
     }
   }
 
@@ -138,12 +139,12 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
     const columnSpacing = this.getColumnTotalWidth();
     this.resizeCols.forEach((col) => {
-      const flexRate = col.col.flex * 0.01;
+      const flexRate = col.flex * 0.01;
       const colWidth = columnSpacing * flexRate;
       if (colWidth < col.getMinWidth()) {
         console.error('ResizableGrid Error: Column flex width smaller than min width.');
       }
-      col.setResizeWidth(colWidth);
+      col.setResizeWidth(colWidth, columnSpacing);
     });
   }
 }

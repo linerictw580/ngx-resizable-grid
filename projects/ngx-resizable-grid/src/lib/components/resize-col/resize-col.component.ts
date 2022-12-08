@@ -51,6 +51,11 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   private _style!: CSSStyleDeclaration;
 
   private _width!: number;
+  private _flex!: number;
+  /**the current percentage of this column (updates after every resize) */
+  get flex() {
+    return this._flex;
+  }
 
   constructor(
     private _elem: ElementRef,
@@ -66,6 +71,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.flexShrink = 0;
     this.borderRightWidth = this.last ? '0' : this.spacing + 'px';
     this.minWidth = (this.col.minWidth ?? 0) + 'px';
+
+    this._flex = this.col.flex;
   }
 
   ngAfterViewInit(): void {
@@ -120,8 +127,12 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
    * 設定 resize-col 寬度 (提供給外部作使用)
    * @param width
    */
-  setResizeWidth(width: number) {
+  setResizeWidth(width: number, totalColumnWidth: number) {
     this.flexBasis = width + 'px';
+
+    // calculates and updates current column width percentage
+    // in order to keep track of how many percentage every column was allocated after resizing
+    this._flex = (width / totalColumnWidth) * 100;
 
     // @HostBinding() not updating view bindings (flexBasis) while resize-container resizes and recalculates every resize-column's width
     // According to https://github.com/angular/angular/issues/22560 host bindings are part of parent's view
