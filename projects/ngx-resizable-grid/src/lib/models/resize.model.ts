@@ -20,7 +20,7 @@ export interface IResizeColConfig {
   flex: number;
   rows?: IResizeRowConfig[];
   key?: string;
-  /**the minimum width allowed this column to be resized to in pixels */
+  /**the minimum width allowed this column to be resized to in pixels (must be at least `10`) */
   minWidth?: number;
 }
 

@@ -82,7 +82,9 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.flexGrow = 0;
     this.flexShrink = 0;
     this.borderRightWidth = this.last ? '0' : this.spacing + 'px';
-    this.minWidth = (this.col.minWidth ?? 0) + 'px';
+    // force minWidth to be at least 10 to prevent awkward 0-width behaviors
+    this.minWidth =
+      (this.col.minWidth ? (this.col.minWidth < 10 ? 10 : this.col.minWidth) : 10) + 'px';
 
     this._flex = this.col.flex;
   }
@@ -203,6 +205,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   /**
    * 設定 resize-col 寬度 (提供給外部作使用)
    * @param width
+   * @param totalColumnWidth
    */
   setResizeWidth(width: number, totalColumnWidth: number) {
     this.flexBasis = width + 'px';
