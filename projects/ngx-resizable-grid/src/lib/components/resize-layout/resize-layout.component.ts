@@ -32,10 +32,16 @@ export class ResizeLayoutComponent {
 
   onRowResizeStart(e: RowResizeEvent) {
     const { index, last } = e;
+
+    const currRow = this.resizeRows.get(index);
+    currRow?.setMaxHeight('none');
   }
 
   onRowResizeEnd(e: RowResizeEvent) {
-    const { index, last } = e;
+    const { index, last, newHeight } = e;
+
+    const currRow = this.resizeRows.get(index);
+    currRow?.setMaxHeight(newHeight);
   }
 
   onRowResize(e: RowResizeEvent) {

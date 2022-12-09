@@ -16,6 +16,7 @@ import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-te
 import {
   ColResizeEvent,
   IResizeColConfig,
+  ResizeSource,
   ResizeXDir,
   RowResizeEvent,
 } from '../../models/resize.model';
@@ -88,10 +89,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._style = window.getComputedStyle(this._nativeElement);
-
-    if (this.resizeRows.length > 0) {
-      this.calcChildRowsHeight();
-    }
   }
 
   onDragStart(e: any, dir: ResizeXDir) {
@@ -130,12 +127,19 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     });
   }
 
+  hasChildRows() {
+    return this.resizeRows.length;
+  }
+
   /**取得扣掉 gap 之後剩餘的 column 高度 */
   getColumnAvailableHeight() {
     const colHeight = parseFloat(this._style.getPropertyValue('height'));
-    const totalGapHeight = Math.max(this.resizeRows.length - 1, 0) * this.spacing;
-    console.log({ colHeight, totalGapHeight });
+    const totalGapHeight = this.getTotalGapHeight();
     return colHeight - totalGapHeight;
+  }
+
+  getTotalGapHeight() {
+    return Math.max(this.resizeRows.length - 1, 0) * this.spacing;
   }
 
   getWidth() {
@@ -221,13 +225,12 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.flexShrink = value;
   }
 
-  calcChildRowsHeight() {
-    const availableHeight = this.getColumnAvailableHeight();
-    console.log('availableHeight', availableHeight);
+  calcChildRowsHeight(parentRowHeight: number) {
+    const availableHeight = parentRowHeight - this.getTotalGapHeight();
     this.resizeRows.forEach((row) => {
       const flexRate = row.flex * 0.01;
       const rowHeight = availableHeight * flexRate;
-      row.setResizeHeight(rowHeight, availableHeight);
+      row.setResizeHeight(rowHeight, availableHeight, ResizeSource.ANCESTOR);
     });
   }
 

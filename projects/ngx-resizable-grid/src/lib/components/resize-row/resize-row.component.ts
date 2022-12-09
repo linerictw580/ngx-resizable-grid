@@ -14,6 +14,7 @@ import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-te
 import {
   ColResizeEvent,
   IResizeRowConfig,
+  ResizeSource,
   ResizeYDir,
   RowResizeEvent,
 } from '../../models/resize.model';
@@ -34,6 +35,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @HostBinding('style.border-left-width') borderLeftWidth!: string;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
   @HostBinding('style.border-bottom-width') borderBottomWidth!: string;
+  @HostBinding('style.max-height') maxHeight!: string;
   @HostBinding('class.resize-row') resizeRow = true;
   @HostBinding('class.resizable') resizable = true;
 
@@ -74,6 +76,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this.borderRightWidth = this.layer === 1 ? this.spacing + 'px' : '0';
     this.borderBottomWidth =
       this.layer === 1 || (this.layer !== 1 && !this.last) ? this.spacing + 'px' : '0';
+    this.maxHeight = 'none';
 
     this._initFlexParams();
   }
@@ -102,6 +105,25 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this._style = window.getComputedStyle(this._nativeElement);
 
     this.calcColsWidth();
+
+    if (this.layer === 1) {
+      // set root layer row max-height to a fixed height
+      // to prevent row height from expanding while resizing sub layer rows
+      this.maxHeight = this.getHeight() + 'px';
+
+      // child components' ngAfterViewInit will be called before parent's
+      // so instead of calling calcChildRowsHeight inside each resize-col's ngAfterViewInit
+      // we call calcChildRowsHeight on the first layer to make sure parent's row height is correctly set before calculating child rows' height
+      this.calcNestedRowsHeight(this.getHeight());
+    }
+  }
+
+  calcNestedRowsHeight(rowHeight: number) {
+    this.resizeCols.forEach((col) => {
+      if (col.hasChildRows()) {
+        col.calcChildRowsHeight(rowHeight);
+      }
+    });
   }
 
   onDragStart(e: any, dir: ResizeYDir) {
@@ -203,21 +225,30 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     }
   }
 
+  setMaxHeight(height: number | string) {
+    this.maxHeight = typeof height === 'number' ? height + 'px' : height;
+  }
+
   /**
    *
    * @param height
    * @param totalRowHeight used to calculate the height percentage of this row (only rows from layer index greater than `1` requires this)
+   * @param source whether this resize action came from self resize or its ancestor row
    */
-  setResizeHeight(height: number, totalRowHeight?: number) {
+  setResizeHeight(height: number, totalRowHeight?: number, source = ResizeSource.SELF) {
     if (this.layer > 1) {
       this.flexBasis = height + 'px';
-      this._flex = (height / (totalRowHeight ?? height)) * 100;
-      console.log(`layer${this.layer}`, this.flexBasis);
+
+      // update a row's flex only when user directly resizes that specific row
+      if (source === ResizeSource.SELF) {
+        this._flex = (height / (totalRowHeight ?? height)) * 100;
+      }
     } else {
       // this.flexBasis = Math.max(height, this.getMinHeight()) + 'px';
       this.flexBasis = height + 'px';
     }
-    console.log('setResizeHeight', height);
+
+    this.calcNestedRowsHeight(height);
   }
 
   setFlexGrow(value: any) {

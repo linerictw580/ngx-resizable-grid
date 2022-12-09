@@ -35,3 +35,8 @@ export class ColResizeEvent {
   last!: boolean;
   newWidth!: number;
 }
+
+export enum ResizeSource {
+  SELF,
+  ANCESTOR,
+}
