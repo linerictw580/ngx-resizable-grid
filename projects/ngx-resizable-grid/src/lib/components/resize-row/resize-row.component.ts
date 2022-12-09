@@ -251,12 +251,40 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this.calcNestedRowsHeight(height);
   }
 
+  setFlexBasisAuto() {
+    this.flexBasis = 'auto';
+
+    this.resizeCols.forEach((col) => {
+      if (col.hasChildRows()) {
+        col.resizeRows.forEach((row) => {
+          row.setFlexBasisAuto();
+        });
+      }
+    });
+  }
+
   setFlexGrow(value: any) {
     this.flexGrow = value;
+
+    this.resizeCols.forEach((col) => {
+      if (col.hasChildRows()) {
+        col.resizeRows.forEach((row) => {
+          row.setFlexGrow(value);
+        });
+      }
+    });
   }
 
   setFlexShrink(value: any) {
     this.flexShrink = value;
+
+    this.resizeCols.forEach((col) => {
+      if (col.hasChildRows()) {
+        col.resizeRows.forEach((row) => {
+          row.setFlexShrink(value);
+        });
+      }
+    });
   }
 
   calcColsWidth() {

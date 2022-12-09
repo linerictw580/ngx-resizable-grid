@@ -160,6 +160,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     }
 
     const nextRow = this.resizeRows.get(index + 1);
+    nextRow?.setFlexBasisAuto();
     nextRow?.setFlexGrow(1);
     nextRow?.setFlexShrink(1);
   }
