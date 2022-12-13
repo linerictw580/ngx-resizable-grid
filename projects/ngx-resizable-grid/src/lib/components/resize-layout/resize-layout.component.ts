@@ -1,4 +1,4 @@
-import { Component, Input, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
 import { IResizeLayoutConfig, RowResizeEvent } from '../../models/resize.model';
 import { ResizeRowComponent } from '../resize-row/resize-row.component';
@@ -7,6 +7,7 @@ import { ResizeRowComponent } from '../resize-row/resize-row.component';
   selector: 'resize-layout',
   templateUrl: './resize-layout.component.html',
   styleUrls: ['./resize-layout.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResizeLayoutComponent {
   @ViewChildren(ResizeRowComponent) resizeRows!: QueryList<ResizeRowComponent>;

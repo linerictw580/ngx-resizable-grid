@@ -15,11 +15,12 @@
 ></resize-col>
 <div
   *ngFor="let dir of directions"
+  class="resize-handle row-resize-handle"
   [class]="'rg-' + dir"
   resizeHandle
   (dragStart)="onDragStart($event, dir)"
   (dragMove)="onDragMove($event)"
   (dragEnd)="onDragEnd($event)"
 >
-  <span></span>
+  <span *ngIf="spacing >= 6" class="resize-icon"></span>
 </div>

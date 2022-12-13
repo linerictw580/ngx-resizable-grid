@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -24,6 +25,7 @@ import { ResizeColComponent } from '../resize-col/resize-col.component';
   selector: 'resize-row',
   templateUrl: './resize-row.component.html',
   styleUrls: ['./resize-row.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResizeRowComponent implements OnInit, AfterViewInit {
   @ViewChildren(ResizeColComponent) resizeCols!: QueryList<ResizeColComponent>;

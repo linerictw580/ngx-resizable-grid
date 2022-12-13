@@ -1,5 +1,6 @@
 import { Component, QueryList, ViewChildren } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from 'ngx-resizable-grid';
+import { TodoItem } from 'projects/demo/src/app/components/test/test.component';
 import { IResizeLayoutConfig } from 'projects/ngx-resizable-grid/src/lib/models/resize.model';
 
 @Component({
@@ -13,8 +14,24 @@ export class AppComponent {
 
   sidenavOpen = false;
 
+  title = 'Todo List';
+  todos: TodoItem[] = [
+    {
+      id: 1,
+      description: 'aaa',
+    },
+    {
+      id: 2,
+      description: 'bbb',
+    },
+    {
+      id: 3,
+      description: 'ccc',
+    },
+  ];
+
   resizeLayoutConfig: IResizeLayoutConfig = {
-    // spacing: 16,
+    spacing: 4,
     rows: [
       {
         cols: [
@@ -44,7 +61,8 @@ export class AppComponent {
         minHeight: 60,
         cols: [
           {
-            key: 'block5',
+            // key: 'block5',
+            key: 'todolist',
             widthFlex: 50,
             minWidth: 5,
           },
@@ -435,5 +453,12 @@ export class AppComponent {
 
   onToggleSidenav(): void {
     this.sidenavOpen = !this.sidenavOpen;
+  }
+
+  addTodo() {
+    this.todos.push({
+      id: this.todos.length + 1,
+      description: 'ddd',
+    });
   }
 }

@@ -2,6 +2,7 @@
 <h2>Resize Layout</h2>
 
 <button (click)="onToggleSidenav()">Toggle Sidenav</button>
+<button (click)="addTodo()">Add Todo Item</button>
 <div class="main">
   <div class="side-nav" [class.open]="sidenavOpen"></div>
   <div class="page">
@@ -47,6 +48,10 @@
 
 <ng-template resizeLayoutTemplate key="block10">
   <div class="block" style="background: peru"></div>
+</ng-template>
+
+<ng-template resizeLayoutTemplate key="todolist">
+  <app-list [title]="title" [todoList]="todos"></app-list>
 </ng-template>
 
 <!-- <h2>Example 1</h2>
