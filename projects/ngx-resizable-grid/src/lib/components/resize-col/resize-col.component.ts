@@ -243,13 +243,23 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     }, 0);
     const nextRowNewHeight = colHeightToCalcRatio - (newHeight + otherRowsTotalHeight);
 
-    // allow max height must consider nested child gaps to prevent expanding out of bounds
-    const colHeightToExpand = this.getColumnAvailableHeight();
+    // colHeightToExpand is base on whether the next row has nested child gaps
+    // if the next row doesn't have any nested rows, then we can just simply ignore child gaps' heights
+    // else we would have to consider child gaps' heights to prevent current row from exceeding the height limit
+    const colHeightToExpand = nextRow?.hasNestedRows()
+      ? this.getColumnAvailableHeight()
+      : colHeightToCalcRatio;
     const allowMaxHeight = colHeightToExpand - (nextRowMinHeight + otherRowsTotalHeight);
+
+    const allowMinHeight = currRow?.getNestedGapHeight() ?? 0;
+    const nextRowMaxHeight = colHeightToCalcRatio - (allowMinHeight + otherRowsTotalHeight);
 
     if (newHeight > allowMaxHeight) {
       currRow?.setResizeHeight(allowMaxHeight, colHeightToCalcRatio);
       nextRow?.setResizeHeight(nextRowMinHeight, colHeightToCalcRatio);
+    } else if (newHeight < allowMinHeight) {
+      currRow?.setResizeHeight(allowMinHeight, colHeightToCalcRatio);
+      nextRow?.setResizeHeight(nextRowMaxHeight, colHeightToCalcRatio);
     } else {
       currRow?.setResizeHeight(newHeight, colHeightToCalcRatio);
       nextRow?.setResizeHeight(nextRowNewHeight, colHeightToCalcRatio);

@@ -61,7 +61,7 @@ export class AppComponent {
                 ],
               },
               {
-                flex: 70,
+                flex: 40,
                 cols: [
                   {
                     flex: 100,
@@ -113,38 +113,35 @@ export class AppComponent {
                   },
                 ],
               },
-              // {
-              //   flex: 30,
-              //   cols: [
-              //     {
-              //       key: 'block7',
-              //       flex: 100,
-              //       // rows: [
-              //       //   {
-              //       //     flex: 100,
-              //       //     cols: [
-              //       //       {
-              //       //         key: 'block10',
-              //       //         flex: 25,
-              //       //       },
-              //       //       {
-              //       //         key: 'block1',
-              //       //         flex: 25,
-              //       //       },
-              //       //       {
-              //       //         key: 'block2',
-              //       //         flex: 25,
-              //       //       },
-              //       //       {
-              //       //         key: 'block3',
-              //       //         flex: 25,
-              //       //       },
-              //       //     ],
-              //       //   },
-              //       // ],
-              //     },
-              //   ],
-              // },
+              {
+                flex: 30,
+                cols: [
+                  {
+                    // key: 'block7',
+                    flex: 100,
+                    rows: [
+                      {
+                        flex: 50,
+                        cols: [
+                          {
+                            key: 'block10',
+                            flex: 100,
+                          },
+                        ],
+                      },
+                      {
+                        flex: 50,
+                        cols: [
+                          {
+                            key: 'block1',
+                            flex: 100,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
         ],

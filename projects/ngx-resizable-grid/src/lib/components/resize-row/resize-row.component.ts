@@ -141,14 +141,6 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private _calcNestedRowsHeight(rowHeight: number) {
-    this.resizeCols.forEach((col) => {
-      if (col.hasChildRows()) {
-        col.calcChildRowsHeight(rowHeight);
-      }
-    });
-  }
-
   onDragStart(e: any, dir: ResizeYDir) {
     const mouseEvent = e.nativeEvent as MouseEvent;
 
@@ -185,6 +177,10 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     });
   }
 
+  hasNestedRows() {
+    return this.resizeCols.some((col) => col.resizeRows.length > 0);
+  }
+
   /**取得扣掉 gap 之後剩餘的 row 寬度 */
   getRowAvailableWidth() {
     const rowWidth = parseFloat(this._style.getPropertyValue('width'));
@@ -198,6 +194,15 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   getMinHeight() {
     return this.row.minHeight ?? 0;
+  }
+
+  /**gets the max gap height nested in the current row  */
+  getNestedGapHeight() {
+    return Math.max(
+      ...this.resizeCols.map((col) => {
+        return col.getNestedTotalGapHeight();
+      })
+    );
   }
 
   onColResizeStart(e: ColResizeEvent) {
