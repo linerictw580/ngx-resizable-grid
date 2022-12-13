@@ -38,6 +38,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @HostBinding('style.max-height') maxHeight!: string;
   @HostBinding('class.resize-row') resizeRow = true;
   @HostBinding('class.resizable') resizable = true;
+  @HostBinding('attr.id') id!: string;
 
   @Input() row!: IResizeRowConfig;
   @Input() first!: boolean;
@@ -48,10 +49,17 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @Input() spacing!: number;
   /**represents the index of layer this row is currently on (root layer is `1`) */
   @Input() layer!: number;
+  @Input() parentId = '';
 
   @Output() rowResizeStart = new EventEmitter<RowResizeEvent>();
   @Output() rowResize = new EventEmitter<RowResizeEvent>();
   @Output() rowResizeEnd = new EventEmitter<RowResizeEvent>();
+
+  private _uniqueId!: string;
+  /**represents an unique identifier for this specific row */
+  get uniqueId() {
+    return this._uniqueId;
+  }
 
   private _resizeYDir: ResizeYDir = 'none';
   private _resizeStartY!: number;
@@ -71,6 +79,13 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    if (this.layer > 1) {
+      this._uniqueId = this.parentId + '_row' + (this.index + 1);
+    } else {
+      this._uniqueId = 'row' + (this.index + 1);
+    }
+    this.id = this.uniqueId;
+
     this.borderTopWidth = this.first && this.layer === 1 ? this.spacing + 'px' : '0';
     this.borderLeftWidth = this.layer === 1 ? this.spacing + 'px' : '0';
     this.borderRightWidth = this.layer === 1 ? this.spacing + 'px' : '0';
@@ -112,13 +127,21 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       this.maxHeight = this.getHeight() + 'px';
 
       // child components' ngAfterViewInit will be called before parent's
-      // so instead of calling calcChildRowsHeight inside each resize-col's ngAfterViewInit
-      // we call calcChildRowsHeight on the first layer to make sure parent's row height is correctly set before calculating child rows' height
-      this.calcNestedRowsHeight(this.getHeight());
+      // so instead of calling initChildRowsHeight inside each resize-col's ngAfterViewInit
+      // we call initChildRowsHeight on the first layer to make sure parent's row height is correctly set before calculating child rows' height
+      this._initNestedRowsHeight(this.getHeight());
     }
   }
 
-  calcNestedRowsHeight(rowHeight: number) {
+  private _initNestedRowsHeight(rowHeight: number) {
+    this.resizeCols.forEach((col) => {
+      if (col.hasChildRows()) {
+        col.initChildRowsHeight(rowHeight);
+      }
+    });
+  }
+
+  private _calcNestedRowsHeight(rowHeight: number) {
     this.resizeCols.forEach((col) => {
       if (col.hasChildRows()) {
         col.calcChildRowsHeight(rowHeight);
@@ -145,7 +168,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     const offset = this._resizeStartY - mouseEvent.clientY;
     const operand = this._resizeYDir === 'bottom' ? 1 : -1;
 
-    const newHeight = this._height - offset * operand;
+    const newHeight = Math.max(this._height - offset * operand, 0);
 
     this.rowResize.emit({
       index: this.index,
@@ -248,11 +271,11 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       this.flexBasis = height + 'px';
     }
 
-    this.calcNestedRowsHeight(height);
+    this._initNestedRowsHeight(height);
   }
 
   setFlexBasisAuto() {
-    this.flexBasis = 'auto';
+    // this.flexBasis = 'auto';
 
     this.resizeCols.forEach((col) => {
       if (col.hasChildRows()) {

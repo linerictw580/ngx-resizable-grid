@@ -9,6 +9,7 @@
   [templates]="templates"
   [spacing]="spacing"
   [layer]="layer + 1"
+  [parentId]="uniqueId"
   resizeObserver
   (elementResize)="onContainerResize(index)"
   (rowResizeStart)="onRowResizeStart($event)"

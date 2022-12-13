@@ -40,12 +40,13 @@ export class AppComponent {
         ],
       },
       {
-        height: 120,
+        height: 240,
         minHeight: 60,
         cols: [
           {
             key: 'block5',
             flex: 50,
+            minWidth: 5,
           },
           {
             flex: 50,
@@ -60,37 +61,90 @@ export class AppComponent {
                 ],
               },
               {
-                flex: 30,
-                cols: [
-                  {
-                    key: 'block7',
-                    flex: 100,
-                  },
-                ],
-              },
-              {
-                flex: 40,
+                flex: 70,
                 cols: [
                   {
                     flex: 100,
+                    // key: 'block8',
                     rows: [
                       {
                         flex: 100,
                         cols: [
                           {
-                            key: 'block8',
-                            flex: 50,
+                            // key: 'block8',
+                            flex: 100,
+                            rows: [
+                              {
+                                flex: 33.33,
+                                cols: [
+                                  {
+                                    flex: 100,
+                                    key: 'block8',
+                                  },
+                                ],
+                              },
+                              {
+                                flex: 33.33,
+                                cols: [
+                                  {
+                                    flex: 100,
+                                    key: 'block4',
+                                  },
+                                ],
+                              },
+                              {
+                                flex: 33.33,
+                                cols: [
+                                  {
+                                    flex: 100,
+                                    key: 'block5',
+                                  },
+                                ],
+                              },
+                            ],
                           },
-                          {
-                            key: 'block9',
-                            flex: 50,
-                          },
+                          // {
+                          //   key: 'block9',
+                          //   flex: 50,
+                          // },
                         ],
                       },
                     ],
                   },
                 ],
               },
+              // {
+              //   flex: 30,
+              //   cols: [
+              //     {
+              //       key: 'block7',
+              //       flex: 100,
+              //       // rows: [
+              //       //   {
+              //       //     flex: 100,
+              //       //     cols: [
+              //       //       {
+              //       //         key: 'block10',
+              //       //         flex: 25,
+              //       //       },
+              //       //       {
+              //       //         key: 'block1',
+              //       //         flex: 25,
+              //       //       },
+              //       //       {
+              //       //         key: 'block2',
+              //       //         flex: 25,
+              //       //       },
+              //       //       {
+              //       //         key: 'block3',
+              //       //         flex: 25,
+              //       //       },
+              //       //     ],
+              //       //   },
+              //       // ],
+              //     },
+              //   ],
+              // },
             ],
           },
         ],
@@ -224,6 +278,8 @@ export class AppComponent {
       },
     ],
   };
+
+  constructor() {}
 
   onToggleSidenav(): void {
     this.sidenavOpen = !this.sidenavOpen;

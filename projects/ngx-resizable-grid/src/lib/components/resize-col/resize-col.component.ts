@@ -37,6 +37,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @HostBinding('style.min-width') minWidth!: string;
   @HostBinding('class.resize-col') resizeCol = true;
   @HostBinding('class.resizable') resizable = true;
+  @HostBinding('attr.id') id!: string;
 
   @Input() col!: IResizeColConfig;
   @Input() first!: boolean;
@@ -47,10 +48,17 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @Input() spacing!: number;
   /**represents the index of layer this column is currently on (root layer is `1`) */
   @Input() layer!: number;
+  @Input() parentId!: string;
 
   @Output() colResizeStart = new EventEmitter<ColResizeEvent>();
   @Output() colResize = new EventEmitter<ColResizeEvent>();
   @Output() colResizeEnd = new EventEmitter<ColResizeEvent>();
+
+  private _uniqueId!: string;
+  /**represents an unique identifier for this specific column */
+  get uniqueId() {
+    return this._uniqueId;
+  }
 
   public get template() {
     return this.templates?.find((value) => value.key === this.col.key)?.templateRef;
@@ -78,6 +86,9 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this._uniqueId = this.parentId + '_col' + (this.index + 1);
+    this.id = this.uniqueId;
+
     this.flexBasis = `${this.col.flex}%`;
     this.flexGrow = 0;
     this.flexShrink = 0;
@@ -87,6 +98,12 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
       (this.col.minWidth ? (this.col.minWidth < 10 ? 10 : this.col.minWidth) : 10) + 'px';
 
     this._flex = this.col.flex;
+
+    if (this.col.key && this.col.rows?.length) {
+      console.error(
+        `ResizableGrid Error: IResizeColConfig do not accept \`key\`(${this.col.key}) and \`rows\` at the same time.`
+      );
+    }
   }
 
   ngAfterViewInit(): void {
@@ -130,18 +147,48 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   }
 
   hasChildRows() {
-    return this.resizeRows.length;
+    return this.resizeRows.length > 0;
   }
 
-  /**取得扣掉 gap 之後剩餘的 column 高度 */
-  getColumnAvailableHeight() {
+  /**
+   * get the available column height after subtracting gap heights
+   * @param ignoreChildGap set to `true` if ignoring nested row gaps is desired (Default is `false`)
+   * @returns
+   */
+  getColumnAvailableHeight(ignoreChildGap = false): number {
     const colHeight = parseFloat(this._style.getPropertyValue('height'));
-    const totalGapHeight = this.getTotalGapHeight();
+    const totalGapHeight = ignoreChildGap
+      ? this.getSelfGapHeight()
+      : this.getNestedTotalGapHeight();
     return colHeight - totalGapHeight;
   }
 
-  getTotalGapHeight() {
+  /**get only the gap height of current column (ignore nested child gaps) */
+  getSelfGapHeight() {
     return Math.max(this.resizeRows.length - 1, 0) * this.spacing;
+  }
+
+  /**get the total gap height of current column including nested gap heights */
+  getNestedTotalGapHeight() {
+    return this.getSelfGapHeight() + this.getChildRowsTotalGapHeight();
+  }
+
+  getChildRowsTotalGapHeight(): number {
+    if (!this.hasChildRows()) {
+      return 0;
+    }
+
+    const childRowsMaxGapHeights = this.resizeRows.map((rows) => {
+      return Math.max(
+        ...rows.resizeCols.map((col) => {
+          return col.getNestedTotalGapHeight();
+        })
+      );
+    });
+
+    return childRowsMaxGapHeights.reduce((acc, height) => {
+      return acc + height;
+    }, 0);
   }
 
   getWidth() {
@@ -160,9 +207,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     }
 
     const nextRow = this.resizeRows.get(index + 1);
-    nextRow?.setFlexBasisAuto();
-    nextRow?.setFlexGrow(1);
-    nextRow?.setFlexShrink(1);
+    // nextRow?.setFlexGrow(1);
+    // nextRow?.setFlexShrink(1);
   }
 
   onRowResizeEnd(e: RowResizeEvent) {
@@ -174,8 +220,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
     const nextRow = this.resizeRows.get(index + 1);
     nextRow?.setResizeHeight(nextRow.getHeight(), this.getColumnAvailableHeight());
-    nextRow?.setFlexGrow(0);
-    nextRow?.setFlexShrink(0);
+    // nextRow?.setFlexGrow(0);
+    // nextRow?.setFlexShrink(0);
   }
 
   onRowResize(e: RowResizeEvent) {
@@ -185,7 +231,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const colHeight = this.getColumnAvailableHeight();
+    const colHeightToCalcRatio = this.getColumnAvailableHeight(true);
+
     const currRow = this.resizeRows.get(index);
     const nextRow = this.resizeRows.get(index + 1);
     const otherRows = this.resizeRows.filter((item, i) => i !== index && i !== index + 1);
@@ -194,12 +241,18 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     const otherRowsTotalHeight = otherRows.reduce((acc, row) => {
       return acc + row.getHeight();
     }, 0);
+    const nextRowNewHeight = colHeightToCalcRatio - (newHeight + otherRowsTotalHeight);
 
-    const allowMaxHeight = colHeight - (nextRowMinHeight + otherRowsTotalHeight);
+    // allow max height must consider nested child gaps to prevent expanding out of bounds
+    const colHeightToExpand = this.getColumnAvailableHeight();
+    const allowMaxHeight = colHeightToExpand - (nextRowMinHeight + otherRowsTotalHeight);
+
     if (newHeight > allowMaxHeight) {
-      currRow?.setResizeHeight(allowMaxHeight, colHeight);
+      currRow?.setResizeHeight(allowMaxHeight, colHeightToCalcRatio);
+      nextRow?.setResizeHeight(nextRowMinHeight, colHeightToCalcRatio);
     } else {
-      currRow?.setResizeHeight(newHeight, colHeight);
+      currRow?.setResizeHeight(newHeight, colHeightToCalcRatio);
+      nextRow?.setResizeHeight(nextRowNewHeight, colHeightToCalcRatio);
     }
   }
 
@@ -229,8 +282,17 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.flexShrink = value;
   }
 
+  initChildRowsHeight(parentRowHeight: number) {
+    const availableHeight = parentRowHeight - this.getSelfGapHeight();
+    this.resizeRows.forEach((row) => {
+      const flexRate = row.flex * 0.01;
+      const rowHeight = availableHeight * flexRate;
+      row.setResizeHeight(rowHeight, availableHeight, ResizeSource.ANCESTOR);
+    });
+  }
+
   calcChildRowsHeight(parentRowHeight: number) {
-    const availableHeight = parentRowHeight - this.getTotalGapHeight();
+    const availableHeight = parentRowHeight - this.getNestedTotalGapHeight();
     this.resizeRows.forEach((row) => {
       const flexRate = row.flex * 0.01;
       const rowHeight = availableHeight * flexRate;
