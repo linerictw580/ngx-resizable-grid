@@ -71,10 +71,10 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   private _style!: CSSStyleDeclaration;
 
   private _width!: number;
-  private _flex!: number;
+  private _widthFlex!: number;
   /**the current width percentage of this column (updates after every resize) */
-  get flex() {
-    return this._flex;
+  get widthFlex() {
+    return this._widthFlex;
   }
 
   constructor(
@@ -89,7 +89,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this._uniqueId = this.parentId + '_col' + (this.index + 1);
     this.id = this.uniqueId;
 
-    this.flexBasis = `${this.col.flex}%`;
+    this.flexBasis = `${this.col.widthFlex}%`;
     this.flexGrow = 0;
     this.flexShrink = 0;
     this.borderRightWidth = this.last ? '0' : this.spacing + 'px';
@@ -97,7 +97,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.minWidth =
       (this.col.minWidth ? (this.col.minWidth < 10 ? 10 : this.col.minWidth) : 10) + 'px';
 
-    this._flex = this.col.flex;
+    this._widthFlex = this.col.widthFlex;
 
     if (this.col.key && this.col.rows?.length) {
       console.error(
@@ -276,7 +276,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
     // calculates and updates current column width percentage
     // in order to keep track of how many percentage every column was allocated after resizing
-    this._flex = (width / totalColumnWidth) * 100;
+    this._widthFlex = (width / totalColumnWidth) * 100;
 
     // @HostBinding() not updating view bindings (flexBasis) while resize-container resizes and recalculates every resize-column's width
     // According to https://github.com/angular/angular/issues/22560 host bindings are part of parent's view
@@ -295,7 +295,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   initChildRowsHeight(parentRowHeight: number) {
     const availableHeight = parentRowHeight - this.getSelfGapHeight();
     this.resizeRows.forEach((row) => {
-      const flexRate = row.flex * 0.01;
+      const flexRate = row.heightFlex * 0.01;
       const rowHeight = availableHeight * flexRate;
       row.setResizeHeight(rowHeight, availableHeight, ResizeSource.ANCESTOR);
     });
@@ -304,7 +304,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   calcChildRowsHeight(parentRowHeight: number) {
     const availableHeight = parentRowHeight - this.getNestedTotalGapHeight();
     this.resizeRows.forEach((row) => {
-      const flexRate = row.flex * 0.01;
+      const flexRate = row.heightFlex * 0.01;
       const rowHeight = availableHeight * flexRate;
       row.setResizeHeight(rowHeight, availableHeight, ResizeSource.ANCESTOR);
     });

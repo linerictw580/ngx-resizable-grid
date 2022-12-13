@@ -10,14 +10,14 @@ export interface IResizeLayoutConfig {
 export interface IResizeRowConfig {
   cols: IResizeColConfig[];
   /**the percentage of height allocated to this row (only takes affect start from layer `2`) */
-  flex?: number;
+  heightFlex?: number;
   height?: number;
   minHeight?: number;
 }
 
 export interface IResizeColConfig {
   /**the percentage of width allocated to this column */
-  flex: number;
+  widthFlex: number;
   rows?: IResizeRowConfig[];
   key?: string;
   /**the minimum width allowed this column to be resized to in pixels (must be at least `10`) */

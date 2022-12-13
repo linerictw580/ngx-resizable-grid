@@ -68,10 +68,10 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   private _style!: CSSStyleDeclaration;
 
   private _height!: number;
-  private _flex!: number;
+  private _heightFlex!: number;
   /**the current height percentage of this row (updates after every resize) */
-  get flex() {
-    return this._flex;
+  get heightFlex() {
+    return this._heightFlex;
   }
 
   constructor(private _elem: ElementRef) {
@@ -99,16 +99,18 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   private _initFlexParams() {
     // start using flex instead of height to calculate row height while layer index is greater than 1
     if (this.layer > 1) {
-      if (!this.row.flex) {
-        console.error('ResizableGrid Error: `flex` must be set with rows in layer 2 or higher.');
+      if (!this.row.heightFlex) {
+        console.error(
+          'ResizableGrid Error: `heightFlex` must be set with rows in layer 2 or higher.'
+        );
       }
       if (this.row.height) {
         console.error(
-          'ResizableGrid Error: use `flex` instead of `height` with rows in layer 2 or higher.'
+          'ResizableGrid Error: use `heightFlex` instead of `height` with rows in layer 2 or higher.'
         );
       }
-      this.flexBasis = `${this.row.flex}%`;
-      this._flex = this.row.flex ?? 0;
+      this.flexBasis = `${this.row.heightFlex}%`;
+      this._heightFlex = this.row.heightFlex ?? 0;
     } else {
       this.flexBasis = (this.row.height ?? 120) + 'px';
     }
@@ -269,7 +271,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
       // update a row's flex only when user directly resizes that specific row
       if (source === ResizeSource.SELF) {
-        this._flex = (height / (totalRowHeight ?? height)) * 100;
+        this._heightFlex = (height / (totalRowHeight ?? height)) * 100;
       }
     } else {
       // this.flexBasis = Math.max(height, this.getMinHeight()) + 'px';
@@ -319,7 +321,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
     const availableWidth = this.getRowAvailableWidth();
     this.resizeCols.forEach((col) => {
-      const flexRate = col.flex * 0.01;
+      const flexRate = col.widthFlex * 0.01;
       const colWidth = availableWidth * flexRate;
       if (colWidth < col.getMinWidth()) {
         console.error('ResizableGrid Error: Column flex width smaller than min width.');

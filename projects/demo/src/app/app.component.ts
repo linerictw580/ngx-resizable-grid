@@ -20,21 +20,21 @@ export class AppComponent {
         cols: [
           {
             key: 'block1',
-            flex: 20,
+            widthFlex: 20,
             minWidth: 40,
           },
           {
             key: 'block2',
-            flex: 20,
+            widthFlex: 20,
           },
           {
             key: 'block3',
-            flex: 20,
+            widthFlex: 20,
             // minWidth: 200,
           },
           {
             key: 'block4',
-            flex: 40,
+            widthFlex: 40,
             // minWidth: 200,
           },
         ],
@@ -45,68 +45,88 @@ export class AppComponent {
         cols: [
           {
             key: 'block5',
-            flex: 50,
+            widthFlex: 50,
             minWidth: 5,
           },
           {
-            flex: 50,
+            widthFlex: 50,
             rows: [
               {
-                flex: 30,
+                heightFlex: 30,
                 cols: [
                   {
                     key: 'block6',
-                    flex: 100,
+                    widthFlex: 100,
                   },
                 ],
               },
               {
-                flex: 40,
+                heightFlex: 40,
                 cols: [
                   {
-                    flex: 100,
+                    widthFlex: 100,
                     // key: 'block8',
                     rows: [
                       {
-                        flex: 100,
+                        heightFlex: 100,
                         cols: [
                           {
                             // key: 'block8',
-                            flex: 100,
+                            widthFlex: 50,
                             rows: [
                               {
-                                flex: 33.33,
+                                heightFlex: 33.33,
                                 cols: [
                                   {
-                                    flex: 100,
+                                    widthFlex: 100,
                                     key: 'block8',
                                   },
                                 ],
                               },
                               {
-                                flex: 33.33,
+                                heightFlex: 33.33,
                                 cols: [
                                   {
-                                    flex: 100,
+                                    widthFlex: 100,
                                     key: 'block4',
                                   },
                                 ],
                               },
                               {
-                                flex: 33.33,
+                                heightFlex: 33.33,
                                 cols: [
                                   {
-                                    flex: 100,
+                                    widthFlex: 100,
                                     key: 'block5',
                                   },
                                 ],
                               },
                             ],
                           },
-                          // {
-                          //   key: 'block9',
-                          //   flex: 50,
-                          // },
+                          {
+                            // key: 'block9',
+                            widthFlex: 50,
+                            rows: [
+                              {
+                                heightFlex: 50,
+                                cols: [
+                                  {
+                                    key: 'block9',
+                                    widthFlex: 100,
+                                  },
+                                ],
+                              },
+                              {
+                                heightFlex: 50,
+                                cols: [
+                                  {
+                                    key: 'block6',
+                                    widthFlex: 100,
+                                  },
+                                ],
+                              },
+                            ],
+                          },
                         ],
                       },
                     ],
@@ -114,27 +134,27 @@ export class AppComponent {
                 ],
               },
               {
-                flex: 30,
+                heightFlex: 30,
                 cols: [
                   {
                     // key: 'block7',
-                    flex: 100,
+                    widthFlex: 100,
                     rows: [
                       {
-                        flex: 50,
+                        heightFlex: 50,
                         cols: [
                           {
                             key: 'block10',
-                            flex: 100,
+                            widthFlex: 100,
                           },
                         ],
                       },
                       {
-                        flex: 50,
+                        heightFlex: 50,
                         cols: [
                           {
                             key: 'block1',
-                            flex: 100,
+                            widthFlex: 100,
                           },
                         ],
                       },
@@ -156,23 +176,23 @@ export class AppComponent {
         cols: [
           {
             key: 'block1',
-            flex: 20,
+            widthFlex: 20,
           },
           {
             key: 'block2',
-            flex: 20,
+            widthFlex: 20,
           },
           {
             key: 'block3',
-            flex: 20,
+            widthFlex: 20,
           },
           {
             key: 'block4',
-            flex: 20,
+            widthFlex: 20,
           },
           {
             key: 'block5',
-            flex: 20,
+            widthFlex: 20,
           },
         ],
       },
@@ -180,11 +200,11 @@ export class AppComponent {
         cols: [
           {
             key: 'block6',
-            flex: 40,
+            widthFlex: 40,
           },
           {
             key: 'block7',
-            flex: 60,
+            widthFlex: 60,
           },
         ],
       },
@@ -193,11 +213,11 @@ export class AppComponent {
         cols: [
           {
             key: 'block8',
-            flex: 40,
+            widthFlex: 40,
           },
           {
             key: 'block9',
-            flex: 60,
+            widthFlex: 60,
           },
         ],
       },
@@ -207,69 +227,204 @@ export class AppComponent {
   resizeLayoutConfig3: IResizeLayoutConfig = {
     rows: [
       {
+        height: 120,
         cols: [
           {
             key: 'block1',
-            flex: 100,
+            widthFlex: 100,
           },
         ],
       },
       {
+        height: 400,
         cols: [
           {
-            flex: 80,
+            widthFlex: 70,
             rows: [
               {
-                height: 100,
+                heightFlex: 15,
                 cols: [
                   {
                     key: 'block3',
-                    flex: 100,
+                    widthFlex: 100,
                   },
                 ],
               },
               {
-                height: 200,
+                heightFlex: 60,
                 cols: [
                   {
                     key: 'block4',
-                    flex: 100,
+                    widthFlex: 100,
                   },
                 ],
               },
               {
-                height: 100,
+                heightFlex: 25,
                 cols: [
                   {
                     key: 'block5',
-                    flex: 100,
+                    widthFlex: 100,
                   },
                 ],
               },
             ],
           },
           {
-            flex: 20,
+            widthFlex: 30,
             rows: [
               {
-                height: 200,
+                heightFlex: 50,
                 cols: [
                   {
                     key: 'block5',
-                    flex: 100,
+                    widthFlex: 100,
                   },
                 ],
               },
               {
-                height: 200,
+                heightFlex: 50,
                 cols: [
                   {
                     key: 'block6',
-                    flex: 100,
+                    widthFlex: 100,
                   },
                 ],
               },
             ],
+          },
+        ],
+      },
+    ],
+  };
+
+  resizeLayoutConfig4: IResizeLayoutConfig = {
+    rows: [
+      {
+        height: 120,
+        cols: [
+          {
+            key: 'block1',
+            widthFlex: 100,
+          },
+        ],
+      },
+      {
+        height: 360,
+        cols: [
+          {
+            widthFlex: 50,
+            rows: [
+              {
+                heightFlex: 50,
+                cols: [
+                  {
+                    key: 'block2',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+              {
+                heightFlex: 50,
+                cols: [
+                  {
+                    key: 'block3',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            key: 'block4',
+            widthFlex: 25,
+          },
+          {
+            widthFlex: 25,
+            rows: [
+              {
+                heightFlex: 60,
+                cols: [
+                  {
+                    key: 'block5',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+              {
+                heightFlex: 40,
+                cols: [
+                  {
+                    key: 'block6',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  resizeLayoutConfig5: IResizeLayoutConfig = {
+    rows: [
+      {
+        height: 240,
+        cols: [
+          {
+            key: 'block1',
+            widthFlex: 75,
+          },
+          {
+            widthFlex: 25,
+            rows: [
+              {
+                heightFlex: 25,
+                cols: [
+                  {
+                    key: 'block2',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+              {
+                heightFlex: 25,
+                cols: [
+                  {
+                    key: 'block3',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+              {
+                heightFlex: 25,
+                cols: [
+                  {
+                    key: 'block4',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+              {
+                heightFlex: 25,
+                cols: [
+                  {
+                    key: 'block5',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        height: 280,
+        cols: [
+          {
+            key: 'block6',
+            widthFlex: 100,
           },
         ],
       },
