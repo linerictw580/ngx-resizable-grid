@@ -33,8 +33,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @ViewChildren(ResizeRowComponent) resizeRows!: QueryList<ResizeRowComponent>;
 
   @HostBinding('style.flex-basis') flexBasis: any;
-  @HostBinding('style.flex-grow') flexGrow: any;
-  @HostBinding('style.flex-shrink') flexShrink: any;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
   @HostBinding('style.min-width') minWidth!: string;
   @HostBinding('class.resize-col') resizeCol = true;
@@ -92,8 +90,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.id = this.uniqueId;
 
     this.flexBasis = `${this.col.widthFlex}%`;
-    this.flexGrow = 0;
-    this.flexShrink = 0;
     this.borderRightWidth = this.last ? '0' : this.spacing + 'px';
     // force minWidth to be at least 10 to prevent awkward 0-width behaviors
     this.minWidth =
@@ -140,7 +136,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onDragEnd(e: any) {
+  onDragEnd() {
     this.colResizeEnd.emit({
       index: this.index,
       last: this.last,
@@ -176,10 +172,10 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   /**get the total gap height of current column including nested gap heights */
   getNestedTotalGapHeight() {
-    return this.getSelfGapHeight() + this.getChildRowsTotalGapHeight();
+    return this.getSelfGapHeight() + this._getChildRowsTotalGapHeight();
   }
 
-  getChildRowsTotalGapHeight(): number {
+  private _getChildRowsTotalGapHeight(): number {
     if (!this.hasChildRows()) {
       return 0;
     }
@@ -228,18 +224,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     return parseFloat(this._style.getPropertyValue('min-width'));
   }
 
-  onRowResizeStart(e: RowResizeEvent) {
-    const { index, last } = e;
-    // the last resize row inside of a resize column cannot be resized
-    if (last) {
-      return;
-    }
-
-    const nextRow = this.resizeRows.get(index + 1);
-    // nextRow?.setFlexGrow(1);
-    // nextRow?.setFlexShrink(1);
-  }
-
   onRowResizeEnd(e: RowResizeEvent) {
     const { index, last } = e;
     // the last resize row inside of a resize column cannot be resized
@@ -249,8 +233,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
     const nextRow = this.resizeRows.get(index + 1);
     nextRow?.setResizeHeight(nextRow.getHeight(), this.getColumnAvailableHeight());
-    // nextRow?.setFlexGrow(0);
-    // nextRow?.setFlexShrink(0);
   }
 
   onRowResize(e: RowResizeEvent) {
@@ -295,7 +277,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 設定 resize-col 寬度 (提供給外部作使用)
+   * sets the width of this resize column (exposed for external usage)
    * @param width
    * @param totalColumnWidth
    */
@@ -310,14 +292,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     // According to https://github.com/angular/angular/issues/22560 host bindings are part of parent's view
     // so we will have to call detectChanges from ChangeDetectorRef while using @SkipSelf decorator
     this._cdr.detectChanges();
-  }
-
-  setFlexGrow(value: any) {
-    this.flexGrow = value;
-  }
-
-  setFlexShrink(value: any) {
-    this.flexShrink = value;
   }
 
   initChildRowsHeight(parentRowHeight: number) {

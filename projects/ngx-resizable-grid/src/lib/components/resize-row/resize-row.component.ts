@@ -31,8 +31,6 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   @ViewChildren(ResizeColComponent) resizeCols!: QueryList<ResizeColComponent>;
 
   @HostBinding('style.flex-basis') flexBasis: any;
-  @HostBinding('style.flex-grow') flexGrow: any;
-  @HostBinding('style.flex-shrink') flexShrink: any;
   @HostBinding('style.border-top-width') borderTopWidth!: string;
   @HostBinding('style.border-left-width') borderLeftWidth!: string;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
@@ -116,8 +114,6 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     } else {
       this.flexBasis = (this.row.height ?? 120) + 'px';
     }
-    this.flexGrow = 0;
-    this.flexShrink = 0;
   }
 
   ngAfterViewInit(): void {
@@ -173,7 +169,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     });
   }
 
-  onDragEnd(e: any) {
+  onDragEnd() {
     this.rowResizeEnd.emit({
       index: this.index,
       last: this.last,
@@ -240,17 +236,6 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     );
   }
 
-  onColResizeStart(e: ColResizeEvent) {
-    const { index, last } = e;
-    if (last) {
-      return;
-    }
-
-    const nextCol = this.resizeCols.get(index + 1);
-    // nextCol?.setFlexGrow(1);
-    // nextCol?.setFlexShrink(1);
-  }
-
   onColResizeEnd(e: ColResizeEvent) {
     const { index, last } = e;
     if (last) {
@@ -259,8 +244,6 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
     const nextCol = this.resizeCols.get(index + 1);
     nextCol?.setResizeWidth(nextCol.getWidth(), this.getRowAvailableWidth());
-    // nextCol?.setFlexGrow(0);
-    // nextCol?.setFlexShrink(0);
   }
 
   onColResize(e: ColResizeEvent) {
@@ -305,7 +288,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   *
+   * sets the height of this resize row (exposed for external usage)
    * @param height
    * @param totalRowHeight used to calculate the height percentage of this row (only rows from layer index greater than `1` requires this)
    * @param source whether this resize action came from self resize or its ancestor row
@@ -326,44 +309,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this._initNestedRowsHeight(height);
   }
 
-  setFlexBasisAuto() {
-    // this.flexBasis = 'auto';
-
-    this.resizeCols.forEach((col) => {
-      if (col.hasChildRows()) {
-        col.resizeRows.forEach((row) => {
-          row.setFlexBasisAuto();
-        });
-      }
-    });
-  }
-
-  setFlexGrow(value: any) {
-    this.flexGrow = value;
-
-    this.resizeCols.forEach((col) => {
-      if (col.hasChildRows()) {
-        col.resizeRows.forEach((row) => {
-          row.setFlexGrow(value);
-        });
-      }
-    });
-  }
-
-  setFlexShrink(value: any) {
-    this.flexShrink = value;
-
-    this.resizeCols.forEach((col) => {
-      if (col.hasChildRows()) {
-        col.resizeRows.forEach((row) => {
-          row.setFlexShrink(value);
-        });
-      }
-    });
-  }
-
   calcColsWidth() {
-    // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
+    // calculate every resize column's pixel width with the remaining row width (which doesn't contain gap widths)
     const availableWidth = this.getRowAvailableWidth(true);
     this.resizeCols.forEach((col) => {
       const flexRate = col.widthFlex * 0.01;

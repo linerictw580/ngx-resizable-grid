@@ -32,21 +32,21 @@ export class ResizeLayoutComponent {
   }
 
   onRowResizeStart(e: RowResizeEvent) {
-    const { index, last } = e;
+    const { index } = e;
 
     const currRow = this.resizeRows.get(index);
     currRow?.setMaxHeight('none');
   }
 
   onRowResizeEnd(e: RowResizeEvent) {
-    const { index, last, newHeight } = e;
+    const { index, newHeight } = e;
 
     const currRow = this.resizeRows.get(index);
     currRow?.setMaxHeight(newHeight);
   }
 
   onRowResize(e: RowResizeEvent) {
-    const { index, last, newHeight } = e;
+    const { index, newHeight } = e;
 
     const currRow = this.resizeRows.get(index);
     const allowMinHeight = currRow?.getNestedGapHeight() ?? 0;

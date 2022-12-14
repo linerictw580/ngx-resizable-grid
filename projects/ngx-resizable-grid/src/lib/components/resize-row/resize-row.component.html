@@ -9,7 +9,6 @@
   [spacing]="spacing"
   [layer]="layer"
   [parentId]="uniqueId"
-  (colResizeStart)="onColResizeStart($event)"
   (colResizeEnd)="onColResizeEnd($event)"
   (colResize)="onColResize($event)"
 ></resize-col>
@@ -20,7 +19,7 @@
   resizeHandle
   (dragStart)="onDragStart($event, dir)"
   (dragMove)="onDragMove($event)"
-  (dragEnd)="onDragEnd($event)"
+  (dragEnd)="onDragEnd()"
 >
   <span *ngIf="spacing >= 6" class="resize-icon"></span>
 </div>
