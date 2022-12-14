@@ -160,7 +160,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     const offset = this._resizeStartY - mouseEvent.clientY;
     const operand = this._resizeYDir === 'bottom' ? 1 : -1;
 
-    const newHeight = Math.max(this._height - offset * operand, 0);
+    const newHeight = Math.max(this._height - offset * operand, this.getMinHeight());
 
     this.rowResize.emit({
       index: this.index,
@@ -217,6 +217,29 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     return childColsMaxGapWidths.reduce((acc, width) => {
       return acc + width;
     }, 0);
+  }
+
+  /**calculates the max row min height required */
+  getNestedRowMinHeight() {
+    return Math.max(this._getChildRowMaxRequiredMinHeight(), this.getMinHeight());
+  }
+
+  private _getChildRowMaxRequiredMinHeight(): number {
+    if (!this.hasNestedRows()) {
+      return 0;
+    }
+
+    const childRowMinHeightTotals = this.resizeCols.map((col) => {
+      return col.resizeRows
+        .map((row) => {
+          return row.getNestedRowMinHeight();
+        })
+        .reduce((acc, minHeight) => {
+          return acc + minHeight;
+        }, 0);
+    });
+
+    return childRowMinHeightTotals.length > 0 ? Math.max(...childRowMinHeightTotals) : 0;
   }
 
   getHeight() {

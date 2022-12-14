@@ -193,7 +193,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     }, 0);
   }
 
-  /**calculate the max column min width required */
+  /**calculates the max column min width required */
   getNestedColMinWidth() {
     return Math.max(this._getChildColMaxRequiredMinWidth(), this.getMinWidth());
   }
@@ -224,17 +224,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     return parseFloat(this._style.getPropertyValue('min-width'));
   }
 
-  onRowResizeEnd(e: RowResizeEvent) {
-    const { index, last } = e;
-    // the last resize row inside of a resize column cannot be resized
-    if (last) {
-      return;
-    }
-
-    const nextRow = this.resizeRows.get(index + 1);
-    nextRow?.setResizeHeight(nextRow.getHeight(), this.getColumnAvailableHeight());
-  }
-
   onRowResize(e: RowResizeEvent) {
     const { index, last, newHeight } = e;
     // the last resize row inside of a resize column cannot be resized
@@ -247,21 +236,17 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     const nextRow = this.resizeRows.get(index + 1);
     const otherRows = this.resizeRows.filter((item, i) => i !== index && i !== index + 1);
 
-    const nextRowMinHeight = nextRow?.getMinHeight() ?? 0;
+    const nextRowMinHeight = nextRow?.getNestedRowMinHeight() ?? 0;
     const otherRowsTotalHeight = otherRows.reduce((acc, row) => {
       return acc + row.getHeight();
     }, 0);
     const nextRowNewHeight = colHeightToCalcRatio - (newHeight + otherRowsTotalHeight);
 
-    // colHeightToExpand is base on whether the next row has nested child gaps
-    // if the next row doesn't have any nested rows, then we can just simply ignore child gaps' heights
-    // else we would have to consider child gaps' heights to prevent current row from exceeding the height limit
-    const colHeightToExpand = nextRow?.hasNestedRows()
-      ? this.getColumnAvailableHeight()
-      : colHeightToCalcRatio;
-    const allowMaxHeight = colHeightToExpand - (nextRowMinHeight + otherRowsTotalHeight);
+    // nextRowMinHeight already contains nested row gaps and row min width
+    // so we must use colHeightToCalcRatio (which doesn't contain nested row gaps) as the minuend
+    const allowMaxHeight = colHeightToCalcRatio - (nextRowMinHeight + otherRowsTotalHeight);
 
-    const allowMinHeight = currRow?.getNestedGapHeight() ?? 0;
+    const allowMinHeight = currRow?.getNestedRowMinHeight() ?? 0;
     const nextRowMaxHeight = colHeightToCalcRatio - (allowMinHeight + otherRowsTotalHeight);
 
     if (newHeight > allowMaxHeight) {
