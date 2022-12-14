@@ -284,10 +284,16 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     // so we must use rowWidthToCalcRatio (which doesn't contain nested column gaps) as the minuend
     const allowMaxWidth = rowWidthToCalcRatio - (nextColMinWidth + otherColsTotalWidth);
 
+    const allowMinWidth = currCol?.getNestedColMinWidth() ?? 0;
+    const nextColMaxWidth = rowWidthToCalcRatio - (allowMinWidth + otherColsTotalWidth);
+
     // stops column from expanding and pushing other columns out of the row's bounds
     if (newWidth > allowMaxWidth) {
       currCol?.setResizeWidth(allowMaxWidth, rowWidthToCalcRatio);
       nextCol?.setResizeWidth(nextColMinWidth, rowWidthToCalcRatio);
+    } else if (newWidth < allowMinWidth) {
+      currCol?.setResizeWidth(allowMinWidth, rowWidthToCalcRatio);
+      nextCol?.setResizeWidth(nextColMaxWidth, rowWidthToCalcRatio);
     } else {
       currCol?.setResizeWidth(newWidth, rowWidthToCalcRatio);
       nextCol?.setResizeWidth(nextColNewWidth, rowWidthToCalcRatio);
@@ -363,7 +369,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       const flexRate = col.widthFlex * 0.01;
       const colWidth = availableWidth * flexRate;
       if (colWidth < col.getMinWidth()) {
-        console.error('ResizableGrid Error: Column flex width smaller than min width.');
+        console.warn('ResizableGrid Error: Column flex width smaller than min width.');
       }
       col.setResizeWidth(colWidth, availableWidth);
     });

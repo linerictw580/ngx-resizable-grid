@@ -63,11 +63,10 @@ export class AppComponent {
           {
             // key: 'block5',
             key: 'todolist',
-            widthFlex: 50,
-            minWidth: 5,
+            widthFlex: 33.33,
           },
           {
-            widthFlex: 50,
+            widthFlex: 33.33,
             rows: [
               {
                 heightFlex: 30,
@@ -131,6 +130,138 @@ export class AppComponent {
                                   {
                                     key: 'block9',
                                     widthFlex: 100,
+                                  },
+                                ],
+                              },
+                              {
+                                heightFlex: 50,
+                                cols: [
+                                  {
+                                    key: 'block6',
+                                    widthFlex: 100,
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                heightFlex: 30,
+                cols: [
+                  {
+                    // key: 'block7',
+                    widthFlex: 100,
+                    rows: [
+                      {
+                        heightFlex: 50,
+                        cols: [
+                          {
+                            key: 'block10',
+                            widthFlex: 100,
+                          },
+                        ],
+                      },
+                      {
+                        heightFlex: 50,
+                        cols: [
+                          {
+                            key: 'block1',
+                            widthFlex: 100,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            // key: 'block5',
+            widthFlex: 33.33,
+            rows: [
+              {
+                heightFlex: 30,
+                cols: [
+                  {
+                    key: 'block6',
+                    widthFlex: 100,
+                  },
+                ],
+              },
+              {
+                heightFlex: 40,
+                cols: [
+                  {
+                    widthFlex: 100,
+                    // key: 'block8',
+                    rows: [
+                      {
+                        heightFlex: 100,
+                        cols: [
+                          {
+                            // key: 'block8',
+                            widthFlex: 50,
+                            rows: [
+                              {
+                                heightFlex: 33.33,
+                                cols: [
+                                  {
+                                    widthFlex: 100,
+                                    key: 'block8',
+                                  },
+                                ],
+                              },
+                              {
+                                heightFlex: 33.33,
+                                cols: [
+                                  {
+                                    widthFlex: 100,
+                                    key: 'block4',
+                                  },
+                                ],
+                              },
+                              {
+                                heightFlex: 33.33,
+                                cols: [
+                                  {
+                                    widthFlex: 100,
+                                    key: 'block5',
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                          {
+                            // key: 'block9',
+                            widthFlex: 50,
+                            rows: [
+                              {
+                                heightFlex: 50,
+                                cols: [
+                                  {
+                                    // key: 'block9',
+                                    widthFlex: 100,
+                                    rows: [
+                                      {
+                                        heightFlex: 100,
+                                        cols: [
+                                          {
+                                            key: 'block9',
+                                            widthFlex: 50,
+                                          },
+                                          {
+                                            key: 'block10',
+                                            widthFlex: 50,
+                                          },
+                                        ],
+                                      },
+                                    ],
                                   },
                                 ],
                               },
