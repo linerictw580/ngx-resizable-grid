@@ -131,7 +131,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     const offset = this._resizeStartX - mouseEvent.clientX;
     const operand = this._resizeXDir === 'right' ? 1 : -1;
 
-    const newWidth = this._width - offset * operand;
+    const newWidth = Math.max(this._width - offset * operand, this.getMinWidth());
 
     this.colResize.emit({
       index: this.index,
@@ -150,6 +150,10 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   hasChildRows() {
     return this.resizeRows.length > 0;
+  }
+
+  hasNestedCols() {
+    return this.resizeRows.some((row) => row.resizeCols.length > 0);
   }
 
   /**
@@ -180,9 +184,9 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
       return 0;
     }
 
-    const childRowsMaxGapHeights = this.resizeRows.map((rows) => {
+    const childRowsMaxGapHeights = this.resizeRows.map((row) => {
       return Math.max(
-        ...rows.resizeCols.map((col) => {
+        ...row.resizeCols.map((col) => {
           return col.getNestedTotalGapHeight();
         })
       );
@@ -191,6 +195,29 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     return childRowsMaxGapHeights.reduce((acc, height) => {
       return acc + height;
     }, 0);
+  }
+
+  /**calculate the max column min width required */
+  getNestedColMinWidth() {
+    return Math.max(this._getChildColMaxRequiredMinWidth(), this.getMinWidth());
+  }
+
+  private _getChildColMaxRequiredMinWidth(): number {
+    if (!this.hasChildRows()) {
+      return 0;
+    }
+
+    const childColMinWidthTotals = this.resizeRows.map((row) => {
+      return row.resizeCols
+        .map((col) => {
+          return col.getNestedColMinWidth();
+        })
+        .reduce((acc, minWidth) => {
+          return acc + minWidth + row.getChildColsTotalGapWidth();
+        }, 0);
+    });
+
+    return childColMinWidthTotals.length > 0 ? Math.max(...childColMinWidthTotals) : 0;
   }
 
   getWidth() {
@@ -234,7 +261,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     }
 
     const colHeightToCalcRatio = this.getColumnAvailableHeight(true);
-
     const currRow = this.resizeRows.get(index);
     const nextRow = this.resizeRows.get(index + 1);
     const otherRows = this.resizeRows.filter((item, i) => i !== index && i !== index + 1);

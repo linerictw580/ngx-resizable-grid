@@ -185,11 +185,42 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     return this.resizeCols.some((col) => col.resizeRows.length > 0);
   }
 
-  /**取得扣掉 gap 之後剩餘的 row 寬度 */
-  getRowAvailableWidth() {
+  /**
+   * get the available row width after subtracting gap heights
+   * @param ignoreChildGap set to `true` if ignoring nested column gaps is desired (Default is `false`)
+   * @returns
+   */
+  getRowAvailableWidth(ignoreChildGap = false) {
     const rowWidth = parseFloat(this._style.getPropertyValue('width'));
-    const totalGapWidth = Math.max(this.resizeCols.length - 1, 0) * this.spacing;
+    const totalGapWidth = ignoreChildGap ? this.getSelfGapWidth() : this.getNestedTotalGapWidth();
     return rowWidth - totalGapWidth;
+  }
+
+  /**get only the gap width of current row (ignore nested child gaps) */
+  getSelfGapWidth() {
+    return Math.max(this.resizeCols.length - 1, 0) * this.spacing;
+  }
+
+  /**get the total gap width of current row including nested gap widths */
+  getNestedTotalGapWidth() {
+    return this.getSelfGapWidth() + this.getChildColsTotalGapWidth();
+  }
+
+  getChildColsTotalGapWidth(): number {
+    if (!this.hasNestedRows()) {
+      return 0;
+    }
+
+    const childColsMaxGapWidths = this.resizeCols.map((col) => {
+      const colGapWidths = col.resizeRows.map((row) => {
+        return row.getNestedTotalGapWidth();
+      });
+      return colGapWidths.length > 0 ? Math.max(...colGapWidths) : 0;
+    });
+
+    return childColsMaxGapWidths.reduce((acc, width) => {
+      return acc + width;
+    }, 0);
   }
 
   getHeight() {
@@ -216,8 +247,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     }
 
     const nextCol = this.resizeCols.get(index + 1);
-    nextCol?.setFlexGrow(1);
-    nextCol?.setFlexShrink(1);
+    // nextCol?.setFlexGrow(1);
+    // nextCol?.setFlexShrink(1);
   }
 
   onColResizeEnd(e: ColResizeEvent) {
@@ -228,8 +259,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
     const nextCol = this.resizeCols.get(index + 1);
     nextCol?.setResizeWidth(nextCol.getWidth(), this.getRowAvailableWidth());
-    nextCol?.setFlexGrow(0);
-    nextCol?.setFlexShrink(0);
+    // nextCol?.setFlexGrow(0);
+    // nextCol?.setFlexShrink(0);
   }
 
   onColResize(e: ColResizeEvent) {
@@ -238,22 +269,28 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const rowWidth = this.getRowAvailableWidth();
+    const rowWidthToCalcRatio = this.getRowAvailableWidth(true);
     const currCol = this.resizeCols.get(index);
     const nextCol = this.resizeCols.get(index + 1);
     const otherCols = this.resizeCols.filter((item, i) => i !== index && i !== index + 1);
 
-    const nextColMinWidth = nextCol?.getMinWidth() ?? 0;
+    const nextColMinWidth = nextCol?.getNestedColMinWidth() ?? 0;
     const otherColsTotalWidth = otherCols.reduce((acc, col) => {
       return acc + col.getWidth();
     }, 0);
+    const nextColNewWidth = rowWidthToCalcRatio - (newWidth + otherColsTotalWidth);
 
-    const allowMaxWidth = rowWidth - (nextColMinWidth + otherColsTotalWidth);
+    // nextColMinWidth already contains nested column gaps and column min width
+    // so we must use rowWidthToCalcRatio (which doesn't contain nested column gaps) as the minuend
+    const allowMaxWidth = rowWidthToCalcRatio - (nextColMinWidth + otherColsTotalWidth);
+
     // stops column from expanding and pushing other columns out of the row's bounds
     if (newWidth > allowMaxWidth) {
-      currCol?.setResizeWidth(allowMaxWidth, rowWidth);
+      currCol?.setResizeWidth(allowMaxWidth, rowWidthToCalcRatio);
+      nextCol?.setResizeWidth(nextColMinWidth, rowWidthToCalcRatio);
     } else {
-      currCol?.setResizeWidth(newWidth, rowWidth);
+      currCol?.setResizeWidth(newWidth, rowWidthToCalcRatio);
+      nextCol?.setResizeWidth(nextColNewWidth, rowWidthToCalcRatio);
     }
   }
 
@@ -321,7 +358,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   calcColsWidth() {
     // 用扣掉 gap 之後的剩餘空間，去計算每個 resize-col 的 px 寬度
-    const availableWidth = this.getRowAvailableWidth();
+    const availableWidth = this.getRowAvailableWidth(true);
     this.resizeCols.forEach((col) => {
       const flexRate = col.widthFlex * 0.01;
       const colWidth = availableWidth * flexRate;

@@ -49,7 +49,8 @@ export class ResizeLayoutComponent {
     const { index, last, newHeight } = e;
 
     const currRow = this.resizeRows.get(index);
-    currRow?.setResizeHeight(newHeight);
+    const allowMinHeight = currRow?.getNestedGapHeight() ?? 0;
+    currRow?.setResizeHeight(Math.max(newHeight, allowMinHeight));
   }
 
   onContainerResize(index: number) {
