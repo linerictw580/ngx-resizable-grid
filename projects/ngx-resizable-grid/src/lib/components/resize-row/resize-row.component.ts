@@ -129,14 +129,15 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       // child components' ngAfterViewInit will be called before parent's
       // so instead of calling initChildRowsHeight inside each resize-col's ngAfterViewInit
       // we call initChildRowsHeight on the first layer to make sure parent's row height is correctly set before calculating child rows' height
-      this._initNestedRowsHeight(this.getHeight());
+      this._calcNestedRowsHeight(this.getHeight());
     }
   }
 
-  private _initNestedRowsHeight(rowHeight: number) {
+  private _calcNestedRowsHeight(rowHeight: number) {
     this.resizeCols.forEach((col) => {
+      col.height = rowHeight + 'px';
       if (col.hasChildRows()) {
-        col.initChildRowsHeight(rowHeight);
+        col.calcChildRowsHeight(rowHeight);
       }
     });
   }
@@ -329,7 +330,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       this.flexBasis = height + 'px';
     }
 
-    this._initNestedRowsHeight(height);
+    this._calcNestedRowsHeight(height);
   }
 
   calcColsWidth() {

@@ -35,6 +35,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   @HostBinding('style.flex-basis') flexBasis: any;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
   @HostBinding('style.min-width') minWidth!: string;
+  @HostBinding('style.height') height!: string;
   @HostBinding('class.resize-col') resizeCol = true;
   @HostBinding('class.resizable') resizable = true;
   @HostBinding('attr.id') id!: string;
@@ -279,17 +280,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this._cdr.detectChanges();
   }
 
-  initChildRowsHeight(parentRowHeight: number) {
-    const availableHeight = parentRowHeight - this.getSelfGapHeight();
-    this.resizeRows.forEach((row) => {
-      const flexRate = row.heightFlex * 0.01;
-      const rowHeight = availableHeight * flexRate;
-      row.setResizeHeight(rowHeight, availableHeight, ResizeSource.ANCESTOR);
-    });
-  }
-
   calcChildRowsHeight(parentRowHeight: number) {
-    const availableHeight = parentRowHeight - this.getNestedTotalGapHeight();
+    const availableHeight = parentRowHeight - this.getSelfGapHeight();
     this.resizeRows.forEach((row) => {
       const flexRate = row.heightFlex * 0.01;
       const rowHeight = availableHeight * flexRate;

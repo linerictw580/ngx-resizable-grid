@@ -61,8 +61,8 @@ export class AppComponent {
         // minHeight: 180,
         cols: [
           {
-            key: 'block5',
-            // key: 'todolist',
+            // key: 'block5',
+            key: 'todolist',
             widthFlex: 33.33,
           },
           {

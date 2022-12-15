@@ -22,5 +22,9 @@ $spacing: 8px;
     flex: 0 0 100%;
   }
 }
+.resize-col-content {
+  height: 100%;
+  overflow-y: auto;
+}
 
 @import '../../styles/resize-handles';

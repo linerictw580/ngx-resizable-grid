@@ -1,4 +1,6 @@
-<ng-container *ngIf="template" [ngTemplateOutlet]="template"></ng-container>
+<div *ngIf="template" class="resize-col-content">
+  <ng-container [ngTemplateOutlet]="template"></ng-container>
+</div>
 <resize-row
   *ngFor="let row of col.rows; first as first; last as last; index as index"
   [row]="row"

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve demo --port 2000",
+    "start": "ng serve demo --host 192.168.11.193 --port 2000",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
