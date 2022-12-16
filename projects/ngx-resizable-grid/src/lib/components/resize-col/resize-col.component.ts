@@ -268,6 +268,12 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
    * @param totalColumnWidth
    */
   setResizeWidth(width: number, totalColumnWidth: number) {
+    // add this to prevent width is NaN situations (ex: on a non-active tab which does not display the element on the DOM)
+    // which leads to widthFlex is also set to NaN and causes calculation bug
+    if (Number.isNaN(width)) {
+      return;
+    }
+
     this.flexBasis = width + 'px';
 
     // calculates and updates current column width percentage
