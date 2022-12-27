@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve demo --host 192.168.11.193 --port 2000",
-    "build": "ng build",
+    "build": "ng build ngx-resizable-grid",
+    "build:scss": "scss-bundle -p scss-bundle.config.json",
     "watch": "ng build --watch --configuration development",
+    "pack": "npm run build && npm run build:scss && cd dist/ngx-resizable-grid && npm pack",
     "test": "ng test",
     "lint": "ng lint"
   },
@@ -21,6 +23,7 @@
     "@angular/router": "^14.0.0",
     "normalize.css": "^8.0.1",
     "rxjs": "~7.5.0",
+    "scss-bundle": "^3.1.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

@@ -3,9 +3,11 @@ import { NgModule } from '@angular/core';
 import { ResizeHandleDirective } from './directives/resize-handle.directive';
 import { ResizeLayoutComponent } from './components/resize-layout/resize-layout.component';
 import { ResizeLayoutTemplateDirective } from './directives/resize-layout-template.directive';
-import { ResizeRowComponent } from './components/resize-row/resize-row.component';
-import { ResizeColComponent } from './components/resize-col/resize-col.component';
 import { ResizeObserverDirective } from './directives/resize-observer.directive';
+import {
+  ResizeColComponent,
+  ResizeRowComponent,
+} from './components/resize-unit/resize-unit.component';
 
 @NgModule({
   declarations: [

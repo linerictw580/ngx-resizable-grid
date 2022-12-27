@@ -1,0 +1,6 @@
+{
+  "bundlerOptions": {
+    "entryFile": "./projects/ngx-resizable-grid/src/lib/styles/_resize-handles.scss",
+    "outFile": "./dist/ngx-resizable-grid/lib/styles/_resize-handles.scss"
+  }
+}

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
 import { IResizeLayoutConfig, RowResizeEvent } from '../../models/resize.model';
-import { ResizeRowComponent } from '../resize-row/resize-row.component';
+import { ResizeRowComponent } from '../resize-unit/resize-unit.component';
 
 @Component({
   selector: 'resize-layout',
