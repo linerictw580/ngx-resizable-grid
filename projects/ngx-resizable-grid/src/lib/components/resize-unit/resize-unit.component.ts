@@ -78,6 +78,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     return this._heightFlex;
   }
 
+  private _hasNestedRows = false;
+
   constructor(private _elem: ElementRef) {
     this._nativeElement = this._elem.nativeElement;
   }
@@ -121,6 +123,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this._hasNestedRows = this.resizeCols.some((col) => col.resizeRows.length > 0);
     this._style = window.getComputedStyle(this._nativeElement);
 
     this.calcColsWidth();
@@ -140,7 +143,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   private _calcNestedRowsHeight(rowHeight: number) {
     this.resizeCols.forEach((col) => {
       col.height = rowHeight + 'px';
-      if (col.hasChildRows()) {
+      if (col.hasChildRows) {
         col.calcChildRowsHeight(rowHeight);
       }
     });
@@ -182,10 +185,6 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     });
   }
 
-  hasNestedRows() {
-    return this.resizeCols.some((col) => col.resizeRows.length > 0);
-  }
-
   /**
    * get the available row width after subtracting gap heights
    * @param ignoreChildGap set to `true` if ignoring nested column gaps is desired (Default is `false`)
@@ -208,7 +207,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   }
 
   getChildColsTotalGapWidth(): number {
-    if (!this.hasNestedRows()) {
+    if (!this._hasNestedRows) {
       return 0;
     }
 
@@ -230,7 +229,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   }
 
   private _getChildRowMaxRequiredMinHeight(): number {
-    if (!this.hasNestedRows()) {
+    if (!this._hasNestedRows) {
       return 0;
     }
 
@@ -406,6 +405,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     return this._widthFlex;
   }
 
+  public hasChildRows = false;
+
   constructor(
     private _elem: ElementRef,
     // Skip the current's component changed detector and give access to the first ancestor (in this case the host component)
@@ -434,6 +435,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.hasChildRows = this.resizeRows.length > 0;
     this._style = window.getComputedStyle(this._nativeElement);
   }
 
@@ -473,14 +475,6 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     });
   }
 
-  hasChildRows() {
-    return this.resizeRows.length > 0;
-  }
-
-  hasNestedCols() {
-    return this.resizeRows.some((row) => row.resizeCols.length > 0);
-  }
-
   /**
    * get the available column height after subtracting gap heights
    * @param ignoreChildGap set to `true` if ignoring nested row gaps is desired (Default is `false`)
@@ -505,7 +499,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   }
 
   private _getChildRowsTotalGapHeight(): number {
-    if (!this.hasChildRows()) {
+    if (!this.hasChildRows) {
       return 0;
     }
 
@@ -528,7 +522,7 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   }
 
   private _getChildColMaxRequiredMinWidth(): number {
-    if (!this.hasChildRows()) {
+    if (!this.hasChildRows) {
       return 0;
     }
 
