@@ -36,7 +36,8 @@ import {
 export class ResizeRowComponent implements OnInit, AfterViewInit {
   @ViewChildren(forwardRef(() => ResizeColComponent)) resizeCols!: QueryList<ResizeColComponent>;
 
-  @HostBinding('style.flex-basis') flexBasis: any;
+  flexBasis: any;
+  // @HostBinding('style.flex-basis') flexBasis: any;
   @HostBinding('style.border-top-width') borderTopWidth!: string;
   @HostBinding('style.border-left-width') borderLeftWidth!: string;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
@@ -82,7 +83,11 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 
   private _hasNestedRows = false;
 
-  constructor(private _elem: ElementRef) {
+  constructor(
+    private _elem: ElementRef,
+    private _vcr: ViewContainerRef,
+    private _renderer: Renderer2
+  ) {
     this._nativeElement = this._elem.nativeElement;
   }
 
@@ -122,6 +127,12 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     } else {
       this.flexBasis = (this.row.height ?? 120) + 'px';
     }
+
+    this.render();
+  }
+
+  render() {
+    this._renderer.setStyle(this._vcr.element.nativeElement, 'flexBasis', this.flexBasis);
   }
 
   ngAfterViewInit(): void {
@@ -145,6 +156,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
   private _calcNestedRowsHeight(rowHeight: number) {
     this.resizeCols.forEach((col) => {
       col.height = rowHeight + 'px';
+      col.render();
       if (col.hasChildRows) {
         col.calcChildRowsHeight(rowHeight);
       }
@@ -334,7 +346,7 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
       // this.flexBasis = Math.max(height, this.getMinHeight()) + 'px';
       this.flexBasis = height + 'px';
     }
-
+    this.render();
     this._calcNestedRowsHeight(height);
   }
 
@@ -374,7 +386,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
   flexBasis: any;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
   @HostBinding('style.min-width') minWidth!: string;
-  @HostBinding('style.height') height!: string;
+  height!: string;
+  // @HostBinding('style.height') height!: string;
   @HostBinding('class.resize-col') resizeCol = true;
   @HostBinding('class.resizable') resizable = true;
   @HostBinding('attr.id') id!: string;
@@ -450,8 +463,9 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     this.render();
   }
 
-  render(includeChild = false) {
+  render() {
     this._renderer.setStyle(this._vcr.element.nativeElement, 'flexBasis', this.flexBasis);
+    this._renderer.setStyle(this._vcr.element.nativeElement, 'height', this.height);
   }
 
   ngAfterViewInit(): void {
