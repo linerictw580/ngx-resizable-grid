@@ -11,8 +11,10 @@ import {
   OnInit,
   Output,
   QueryList,
+  Renderer2,
   SkipSelf,
   ViewChildren,
+  ViewContainerRef,
 } from '@angular/core';
 import { ResizeLayoutTemplateDirective } from '../../directives/resize-layout-template.directive';
 import {
@@ -342,9 +344,18 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
     this.resizeCols.forEach((col) => {
       const flexRate = col.widthFlex * 0.01;
       const colWidth = availableWidth * flexRate;
-      if (colWidth < col.getMinWidth()) {
-        console.warn('ResizableGrid Error: Column flex width smaller than min width.');
-      }
+      // if (colWidth < col.getMinWidth()) {
+      //   console.warn('ResizableGrid Error: Column flex width smaller than min width.');
+      // }
+      col.setResizeWidth(colWidth, availableWidth);
+    });
+  }
+
+  calcChildColsWidth(parentColWidth: number) {
+    const availableWidth = parentColWidth - this.getSelfGapWidth();
+    this.resizeCols.forEach((col) => {
+      const flexRate = col.widthFlex * 0.01;
+      const colWidth = availableWidth * flexRate;
       col.setResizeWidth(colWidth, availableWidth);
     });
   }
@@ -359,7 +370,8 @@ export class ResizeRowComponent implements OnInit, AfterViewInit {
 export class ResizeColComponent implements OnInit, AfterViewInit {
   @ViewChildren(forwardRef(() => ResizeRowComponent)) resizeRows!: QueryList<ResizeRowComponent>;
 
-  @HostBinding('style.flex-basis') flexBasis: any;
+  // @HostBinding('style.flex-basis') flexBasis: any;
+  flexBasis: any;
   @HostBinding('style.border-right-width') borderRightWidth!: string;
   @HostBinding('style.min-width') minWidth!: string;
   @HostBinding('style.height') height!: string;
@@ -409,6 +421,8 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
 
   constructor(
     private _elem: ElementRef,
+    private _vcr: ViewContainerRef,
+    private _renderer: Renderer2,
     // Skip the current's component changed detector and give access to the first ancestor (in this case the host component)
     @SkipSelf() private _cdr: ChangeDetectorRef
   ) {
@@ -432,6 +446,12 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
         `ResizableGrid Error: IResizeColConfig do not accept \`key\`(${this.col.key}) and \`rows\` at the same time.`
       );
     }
+
+    this.render();
+  }
+
+  render(includeChild = false) {
+    this._renderer.setStyle(this._vcr.element.nativeElement, 'flexBasis', this.flexBasis);
   }
 
   ngAfterViewInit(): void {
@@ -601,11 +621,20 @@ export class ResizeColComponent implements OnInit, AfterViewInit {
     // calculates and updates current column width percentage
     // in order to keep track of how many percentage every column was allocated after resizing
     this._widthFlex = (width / totalColumnWidth) * 100;
+    this.render();
 
     // @HostBinding() not updating view bindings (flexBasis) while resize-container resizes and recalculates every resize-column's width
     // According to https://github.com/angular/angular/issues/22560 host bindings are part of parent's view
     // so we will have to call detectChanges from ChangeDetectorRef while using @SkipSelf decorator
-    this._cdr.detectChanges();
+    // this._cdr.detectChanges();
+
+    this._calcNestedColWidth(width);
+  }
+
+  private _calcNestedColWidth(colWidth: number) {
+    this.resizeRows.forEach((row) => {
+      row.calcChildColsWidth(colWidth);
+    });
   }
 
   calcChildRowsHeight(parentRowHeight: number) {
